@@ -5,12 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SpeedyPacket - @yield('title', 'Home')</title>
     <style>
-        body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; padding:0; background:#f7f7fb; color:#222 }
-        .container { max-width:900px; margin:32px auto; padding:20px; background:#fff; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.06)}
-        header { display:flex; justify-content:space-between; align-items:center }
-        nav a { margin-left:12px; color:#0b5fff; text-decoration:none }
-        .btn { display:inline-block; padding:8px 12px; background:#0b5fff; color:#fff; border-radius:6px; text-decoration:none }
-        form input, form button { font-size:16px; padding:8px; margin-top:6px }
+        :root{--accent:#0b5fff;--muted:#6b7280;--bg:#f3f4f6}
+        *{box-sizing:border-box}
+        body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; padding:0; background:var(--bg); color:#111}
+        .wrap{max-width:980px;margin:34px auto;padding:18px}
+        .card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 8px 24px rgba(15,23,42,0.06)}
+        header{display:flex;align-items:center;justify-content:space-between}
+        .brand h1{margin:0;font-size:20px}
+        .brand p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+        nav{display:flex;align-items:center}
+        nav a{color:var(--accent);text-decoration:none;margin-left:16px;font-weight:500}
+        .btn{display:inline-block;padding:8px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;border:none;cursor:pointer}
+        .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(11,95,255,0.12)}
+        input[type="text"], input[type="password"], input[type="email"], textarea{width:100%;padding:10px 12px;border:1px solid #e6eef8;border-radius:8px;background:#fbfdff;font-size:15px}
+        input:focus, textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 6px 18px rgba(11,95,255,0.08)}
+        label{font-size:14px;color:#111;display:block;margin-top:12px}
+        .form-row{margin-top:8px}
+        main{margin-top:18px}
+        @media (max-width:640px){.wrap{margin:18px;padding:12px}.card{padding:16px}}
     </style>
 </head>
 <body>
@@ -23,13 +35,11 @@
             <nav>
                 <a href="{{ url('/') }}">Home</a>
                 @auth
-                    <span style="margin-left:12px">Welkom, {{ auth()->user()->name }}</span>
+                    <a href="{{ route('dashboard') }}" style="margin-left:16px">Dashboard</a>
                     <form method="POST" action="{{ route('logout') }}" style="display:inline">
                         @csrf
                         <button class="btn" type="submit" style="margin-left:12px">Uitloggen</button>
                     </form>
-                @else
-                    <a href="{{ route('login') }}">Inloggen</a>
                 @endauth
             </nav>
         </header>
