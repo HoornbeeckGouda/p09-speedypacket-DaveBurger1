@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SpeedyPacket - @yield('title', 'Home')</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root{--accent:#0b5fff;--muted:#6b7280;--bg:#f3f4f6}
         *{box-sizing:border-box}
@@ -29,12 +30,14 @@
     <div class="container">
         <header>
             <div>
-                <h1 style="margin:0; font-size:20px">SpeedyPacket</h1>
-                <div style="font-size:12px; color:#666">Een eenvoudige demo-app</div>
+                
             </div>
             <nav>
-                <a href="{{ url('/') }}">Home</a>
+                @guest
+                    <a href="{{ route('login') }}">Login</a>
+                @endguest
                 @auth
+                    <a href="{{ url('/') }}">Home</a>
                     <a href="{{ route('dashboard') }}" style="margin-left:16px">Dashboard</a>
                     <form method="POST" action="{{ route('logout') }}" style="display:inline">
                         @csrf
