@@ -67,19 +67,16 @@ Route::get('/directie', function () {
     return view('directie', compact('totalUsers','directieCount','otherCount','recentUsers'));
 })->middleware('auth')->name('directie');
 
-Route::get('/bezorger', function () {
+Route::get('/koerier', function () {
     $user = Auth::user();
-    if (! $user || $user->role !== 'bezorger') {
+    if (! $user || $user->role !== 'koerier') {
         abort(403);
     }
 
-    $packagesInTransit = Package::where('status', 'in_transit')->count();
-    $deliveredPackages = Package::where('status', 'delivered')->count();
-    $pendingPackages = Package::where('status', 'pending')->count();
-    $recentPackages = Package::where('status', 'in_transit')->orderBy('updated_at', 'desc')->limit(10)->get();
+    $packagesToDeliver = Package::where('status', 'in_transit')->orderBy('id')->get();
 
-    return view('bezorger', compact('packagesInTransit', 'deliveredPackages', 'pendingPackages', 'recentPackages'));
-})->middleware('auth')->name('bezorger');
+    return view('koerier', compact('packagesToDeliver'));
+})->middleware('auth')->name('koerier');
 
 Route::get('/ontvanger', function () {
     $user = Auth::user();

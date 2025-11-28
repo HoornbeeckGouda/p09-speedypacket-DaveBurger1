@@ -12,7 +12,7 @@
     <div style="background: linear-gradient(135deg, #0b5fff 0%, #667eea 100%); color: white; padding: 60px 20px; border-radius: 12px; text-align: center; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(11,95,255,0.3);">
         <h1 style="font-size: 3rem; margin: 0 0 10px 0; font-weight: 700;">Welkom bij SpeedyPacket</h1>
         <p style="font-size: 1.2rem; margin: 0 0 30px 0; opacity: 0.9;">Snelle, betrouwbare verzendingen voor al uw pakketten.</p>
-        <a href="{{ route('dashboard') }}" class="btn" style="background: white; color: #0b5fff; padding: 12px 24px; font-weight: 600; text-decoration: none; border-radius: 8px; display: inline-block;">Ga naar Dashboard</a>
+        <a href="{{ route('dashboard') }}" class="btn" style="background: white; color: #0b5fff; padding: 12px 24px; font-weight: 600; text-decoration: none; border-radius: 8px; display: inline-block;">Ga naar Login</a>
     </div>
 
     <!-- Features Section -->

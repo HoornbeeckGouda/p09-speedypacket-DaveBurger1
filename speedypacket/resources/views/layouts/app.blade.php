@@ -47,7 +47,7 @@
             </nav>
         </header>
 
-        <main style="margin-top:20px">
+        <main>
             @yield('content')
         </main>
     </div>
