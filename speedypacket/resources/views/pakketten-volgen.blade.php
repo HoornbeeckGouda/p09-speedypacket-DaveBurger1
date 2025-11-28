@@ -3,7 +3,7 @@
 @section('title', 'Pakketten Volgen')
 
 @section('content')
-    <div class="card" style="max-width: 800px; margin: 0 auto;">
+    <div class="card">
         <h2 style="margin-bottom: 24px;"><i class="fas fa-search"></i> Pakketten Volgen</h2>
 
         <form action="{{ route('pakketten-volgen') }}" method="GET" style="margin-bottom: 24px;">

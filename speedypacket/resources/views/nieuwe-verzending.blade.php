@@ -3,7 +3,7 @@
 @section('title', 'Nieuwe Verzending Aanmaken')
 
 @section('content')
-    <div class="card" style="max-width: 800px; margin: 0 auto;">
+    <div class="card">
         <h2 style="margin-bottom: 24px;"><i class="fas fa-plus-circle"></i> Nieuwe Verzending Aanmaken</h2>
 
         @if($errors->any())

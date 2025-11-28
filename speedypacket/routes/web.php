@@ -42,11 +42,25 @@ Route::post('/logout', function (Request $request) {
 })->name('logout');
 
 Route::get('/dashboard', function () {
-    $totalPackages = Package::count();
-    $pendingPackages = Package::where('status', 'pending')->count();
-    $deliveredPackages = Package::where('status', 'delivered')->count();
+    $user = Auth::user();
 
-    return view('dashboard', compact('totalPackages', 'pendingPackages', 'deliveredPackages'));
+    // Redirect to role-specific dashboard
+    switch ($user->role) {
+        case 'directie':
+            return redirect()->route('directie');
+        case 'koerier':
+            return redirect()->route('koerier');
+        case 'ontvanger':
+            return redirect()->route('ontvanger');
+        case 'magazijn_medewerker':
+            return redirect()->route('magazijn-medewerker');
+        default:
+            // Fallback to general dashboard for other roles
+            $totalPackages = Package::count();
+            $pendingPackages = Package::where('status', 'pending')->count();
+            $deliveredPackages = Package::where('status', 'delivered')->count();
+            return view('dashboard', compact('totalPackages', 'pendingPackages', 'deliveredPackages'));
+    }
 })->middleware('auth')->name('dashboard');
 
 Route::get('/profile', function () {

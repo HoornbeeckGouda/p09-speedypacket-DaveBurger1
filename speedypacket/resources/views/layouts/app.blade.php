@@ -10,7 +10,7 @@
         *{box-sizing:border-box}
         body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; padding:0; background:var(--bg); color:#111}
         .wrap{max-width:980px;margin:34px auto;padding:18px}
-        .card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 8px 24px rgba(15,23,42,0.06)}
+        .card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 8px 24px rgba(15,23,42,0.06);width:100%;box-sizing:border-box}
         header{display:flex;align-items:center;justify-content:space-between}
         .brand h1{margin:0;font-size:20px}
         .brand p{margin:2px 0 0;font-size:13px;color:var(--muted)}
@@ -51,5 +51,6 @@
             @yield('content')
         </main>
     </div>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </body>
 </html>

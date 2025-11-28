@@ -3,7 +3,7 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    <div class="card" style="max-width:1200px;margin:0 auto;">
+    <div class="card">
         <!-- Hero Section -->
         <div style="background: linear-gradient(135deg, var(--accent), #4f46e5); color: #fff; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
             <h2 style="margin: 0; font-size: 28px;"><i class="fas fa-tachometer-alt"></i> Welkom terug, {{ auth()->user()->name }}!</h2>
@@ -58,8 +58,8 @@
                         @if(auth()->user()->role === 'directie')
                             <li style="margin-bottom: 8px;"><a href="{{ route('directie') }}" style="color: var(--accent); text-decoration: none;"><i class="fas fa-building"></i> Directie Home</a></li>
                         @endif
-                        @if(auth()->user()->role === 'bezorger')
-                            <li style="margin-bottom: 8px;"><a href="{{ route('bezorger') }}" style="color: var(--accent); text-decoration: none;"><i class="fas fa-truck"></i> Bezorger Dashboard</a></li>
+                        @if(auth()->user()->role === 'koerier')
+                            <li style="margin-bottom: 8px;"><a href="{{ route('koerier') }}" style="color: var(--accent); text-decoration: none;"><i class="fas fa-truck"></i> Koerier Dashboard</a></li>
                         @endif
                         @if(auth()->user()->role === 'ontvanger')
                             <li style="margin-bottom: 8px;"><a href="{{ route('ontvanger') }}" style="color: var(--accent); text-decoration: none;"><i class="fas fa-inbox"></i> Ontvanger Dashboard</a></li>

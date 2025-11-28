@@ -33,6 +33,7 @@
             <section>
                 <h4><i class="fas fa-route"></i> Route</h4>
                 @if($packagesToDeliver->count() > 0)
+                    <div id="map" style="height: 400px; width: 100%; margin-top: 8px;" data-addresses="{{ json_encode($packagesToDeliver->pluck('recipient_address')->toArray()) }}"></div>
                     <ol style="margin-top:8px;color:var(--muted); font-size: 14px;">
                     @foreach($packagesToDeliver as $index => $package)
                         <li style="margin-bottom: 8px;">{{ $index + 1 }}. {{ $package->recipient_address }} ({{ $package->recipient_name }})</li>

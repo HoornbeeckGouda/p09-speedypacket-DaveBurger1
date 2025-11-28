@@ -3,7 +3,7 @@
 @section('title', 'Mijn Verzendingen')
 
 @section('content')
-    <div class="card" style="max-width: 1200px; margin: 0 auto;">
+    <div class="card">
         <h2 style="margin-bottom: 24px;"><i class="fas fa-list"></i> Mijn Verzendingen</h2>
 
         @if(session('success'))
