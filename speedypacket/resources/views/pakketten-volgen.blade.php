@@ -59,6 +59,10 @@
                         <strong>Gewicht:</strong><br>
                         {{ $package->weight ? $package->weight . ' kg' : 'Niet opgegeven' }}
                     </div>
+                    <div>
+                        <strong>Koerier:</strong><br>
+                        {{ $package->koerier ? $package->koerier->name : 'Nog niet toegewezen' }}
+                    </div>
                     <div style="grid-column: span 2;">
                         <strong>Adres:</strong><br>
                         {{ $package->recipient_address }}

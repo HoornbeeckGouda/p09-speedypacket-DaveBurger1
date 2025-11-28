@@ -29,4 +29,9 @@ class Package extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function koerier()
+    {
+        return $this->belongsTo(User::class, 'koerier_id');
+    }
 }

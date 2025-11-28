@@ -25,6 +25,9 @@ class User extends Authenticatable
         'role',
         'phone',
         'address',
+        'location',
+        'latitude',
+        'longitude',
     ];
 
     /**
@@ -48,5 +51,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public static function ontvangers()
+    {
+        return self::where('role', 'ontvanger')->get();
     }
 }

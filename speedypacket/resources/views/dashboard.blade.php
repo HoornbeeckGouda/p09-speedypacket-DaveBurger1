@@ -49,8 +49,6 @@
                         </a>
                     </div>
                 </section>
-
-                <!-- Role-Based Actions -->
                 <section>
                     <h4 style="margin-bottom: 12px;"><i class="fas fa-user-cog"></i> Rol-specifieke Acties</h4>
                     <ul style="color:var(--muted); list-style: none; padding: 0;">
@@ -67,21 +65,9 @@
                         @if(auth()->user()->role === 'magazijn_medewerker')
                             <li style="margin-bottom: 8px;"><a href="{{ route('magazijn_medewerker') }}" style="color: var(--accent); text-decoration: none;"><i class="fas fa-warehouse"></i> Magazijn Medewerker Dashboard</a></li>
                         @endif
-                        <li><i class="fas fa-chart-line"></i> Bekijk rapportages (nog te implementeren)</li>
                     </ul>
                 </section>
             </div>
-
-            <aside>
-                <div style="background:#fff;border:1px solid #eef2ff;border-radius:12px;padding:18px;margin-top:18px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-                    <strong><i class="fas fa-bell"></i> Recente Activiteiten</strong>
-                    <ul style="margin-top:12px;color:var(--muted); font-size: 14px; list-style: none; padding: 0;">
-                        <li style="margin-bottom: 8px;"><i class="fas fa-circle" style="color: #10b981; font-size: 8px; margin-right: 8px;"></i> Pakket #1234 bezorgd</li>
-                        <li style="margin-bottom: 8px;"><i class="fas fa-circle" style="color: #f59e0b; font-size: 8px; margin-right: 8px;"></i> Nieuwe verzending aangemaakt</li>
-                        <li><i class="fas fa-circle" style="color: var(--accent); font-size: 8px; margin-right: 8px;"></i> Rapport gegenereerd</li>
-                    </ul>
-                </div>
-            </aside>
         </div>
     </div>
 @endsection

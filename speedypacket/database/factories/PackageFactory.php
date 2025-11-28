@@ -19,15 +19,14 @@ class PackageFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
-            'recipient_name' => fake('nl_NL')->name(),
-            'recipient_email' => fake()->email(),
-            'recipient_phone' => fake()->phoneNumber(),
-            'recipient_address' => fake('nl_NL')->address(),
-            'description' => fake()->sentence(),
-            'weight' => fake()->randomFloat(2, 0.1, 10),
-            'status' => fake()->randomElement(['pending', 'in_transit', 'delivered']),
-            'tracking_number' => fake()->unique()->regexify('[A-Z]{2}[0-9]{8}'),
+            'recipient_name' => 'John Doe',
+            'recipient_email' => 'john@example.com',
+            'recipient_phone' => '123-456-7890',
+            'recipient_address' => '123 Main St, Anytown, NL',
+            'description' => 'Sample package',
+            'weight' => 1.5,
+            'status' => 'pending',
+            'tracking_number' => 'AB12345678',
         ];
     }
 

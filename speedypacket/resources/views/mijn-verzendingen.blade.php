@@ -28,6 +28,7 @@
                             <th style="padding: 12px; text-align: left; font-weight: 600;">Tracking Nummer</th>
                             <th style="padding: 12px; text-align: left; font-weight: 600;">Ontvanger</th>
                             <th style="padding: 12px; text-align: left; font-weight: 600;">Status</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600;">Koerier</th>
                             <th style="padding: 12px; text-align: left; font-weight: 600;">Gewicht</th>
                             <th style="padding: 12px; text-align: left; font-weight: 600;">Aangemaakt</th>
                             <th style="padding: 12px; text-align: left; font-weight: 600;">Acties</th>
@@ -56,6 +57,7 @@
                                         </span>
                                     @endif
                                 </td>
+                                <td style="padding: 12px;">{{ $package->koerier ? $package->koerier->name : 'Nog niet toegewezen' }}</td>
                                 <td style="padding: 12px;">{{ $package->weight ? $package->weight . ' kg' : '-' }}</td>
                                 <td style="padding: 12px;">{{ $package->created_at->format('d-m-Y H:i') }}</td>
                                 <td style="padding: 12px;">

@@ -20,24 +20,17 @@
         <form action="{{ route('nieuwe-verzending.store') }}" method="POST" style="display: grid; gap: 18px;">
             @csrf
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
-                <div>
-                    <label for="recipient_name" style="display: block; margin-bottom: 6px; font-weight: 600;">Naam Ontvanger *</label>
-                    <input type="text" id="recipient_name" name="recipient_name" value="{{ old('recipient_name') }}" required
-                           style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
-                </div>
-
-                <div>
-                    <label for="recipient_email" style="display: block; margin-bottom: 6px; font-weight: 600;">E-mail Ontvanger</label>
-                    <input type="email" id="recipient_email" name="recipient_email" value="{{ old('recipient_email') }}"
-                           style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
-                </div>
-            </div>
-
             <div>
-                <label for="recipient_phone" style="display: block; margin-bottom: 6px; font-weight: 600;">Telefoon Ontvanger</label>
-                <input type="text" id="recipient_phone" name="recipient_phone" value="{{ old('recipient_phone') }}"
-                       style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
+                <label for="recipient_id" style="display: block; margin-bottom: 6px; font-weight: 600;">Naam Ontvanger *</label>
+                <select id="recipient_id" name="recipient_id" required
+                        style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
+                    <option value="">Selecteer een ontvanger</option>
+                    @foreach($ontvangers as $ontvanger)
+                        <option value="{{ $ontvanger->id }}" data-address="{{ $ontvanger->address }}" {{ old('recipient_id') == $ontvanger->id ? 'selected' : '' }}>
+                            {{ $ontvanger->name }} ({{ $ontvanger->email }})
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <div>
@@ -72,4 +65,12 @@
             </div>
         </form>
     </div>
+
+    <script>
+        document.getElementById('recipient_id').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const address = selectedOption.getAttribute('data-address');
+            document.getElementById('recipient_address').value = address || '';
+        });
+    </script>
 @endsection

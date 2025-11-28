@@ -52,8 +52,8 @@ Route::get('/dashboard', function () {
             return redirect()->route('koerier');
         case 'ontvanger':
             return redirect()->route('ontvanger');
-        case 'magazijn_medewerker':
-            return redirect()->route('magazijn-medewerker');
+        case 'magazijn':
+            return redirect()->route('magazijn');
         default:
             // Fallback to general dashboard for other roles
             $totalPackages = Package::count();
@@ -78,7 +78,14 @@ Route::get('/directie', function () {
     $otherCount = $totalUsers - $directieCount;
     $recentUsers = User::orderBy('created_at', 'desc')->limit(8)->get();
 
-    return view('directie', compact('totalUsers','directieCount','otherCount','recentUsers'));
+    // Package statistics
+    $totalPackages = Package::count();
+    $pendingPackages = Package::where('status', 'pending')->count();
+    $inTransitPackages = Package::where('status', 'in_transit')->count();
+    $deliveredPackages = Package::where('status', 'delivered')->count();
+    $recentPackages = Package::with('user')->orderBy('created_at', 'desc')->limit(8)->get();
+
+    return view('directie', compact('totalUsers','directieCount','otherCount','recentUsers','totalPackages','pendingPackages','inTransitPackages','deliveredPackages','recentPackages'));
 })->middleware('auth')->name('directie');
 
 Route::get('/koerier', function () {
@@ -88,9 +95,15 @@ Route::get('/koerier', function () {
     }
 
     $packagesToDeliver = Package::where('status', 'in_transit')->orderBy('id')->get();
+    $pendingPackages = Package::where('status', 'pending')->orderBy('id')->get();
+    $startAddress = 'Overslagweg 2, Waddinxveen, Netherlands';
 
-    return view('koerier', compact('packagesToDeliver'));
+    return view('koerier', compact('packagesToDeliver', 'pendingPackages', 'startAddress'));
 })->middleware('auth')->name('koerier');
+
+Route::post('/koerier/take/{id}', [PackageController::class, 'take'])->middleware('auth')->name('koerier.take');
+
+Route::post('/magazijn/assign/{id}', [PackageController::class, 'assign'])->middleware('auth')->name('magazijn.assign');
 
 Route::get('/ontvanger', function () {
     $user = Auth::user();
@@ -98,27 +111,37 @@ Route::get('/ontvanger', function () {
         abort(403);
     }
 
-    $packagesInTransit = Package::where('status', 'in_transit')->count();
-    $deliveredPackages = Package::where('status', 'delivered')->count();
-    $pendingPackages = Package::where('status', 'pending')->count();
-    $recentPackages = Package::orderBy('updated_at', 'desc')->limit(10)->get();
+    $packagesInTransit = Package::where('status', 'in_transit')->where('recipient_email', $user->email)->get();
+    $deliveredPackages = Package::where('status', 'delivered')->where('recipient_email', $user->email)->count();
+    $pendingPackages = Package::where('status', 'pending')->where('recipient_email', $user->email)->count();
+    $recentPackages = Package::where('recipient_email', $user->email)->orderBy('updated_at', 'desc')->limit(10)->get();
 
-    return view('ontvanger', compact('packagesInTransit', 'deliveredPackages', 'pendingPackages', 'recentPackages'));
+    // Get koerier locations for packages in transit
+    $koerierLocations = $packagesInTransit->map(function ($package) {
+        $koerier = $package->koerier;
+        return [
+            'package_id' => $package->id,
+            'address' => $package->recipient_address,
+            'koerier_name' => $koerier ? $koerier->name : 'Unknown Koerier',
+            'latitude' => $koerier ? $koerier->latitude : null,
+            'longitude' => $koerier ? $koerier->longitude : null
+        ];
+    });
+
+    return view('ontvanger', compact('packagesInTransit', 'deliveredPackages', 'pendingPackages', 'recentPackages', 'koerierLocations'));
 })->middleware('auth')->name('ontvanger');
 
-Route::get('/magazijn-medewerker', function () {
+Route::get('/magazijn', function () {
     $user = Auth::user();
-    if (! $user || $user->role !== 'magazijn_medewerker') {
+    if (! $user || $user->role !== 'magazijn') {
         abort(403);
     }
 
-    $packagesInTransit = Package::where('status', 'in_transit')->count();
-    $deliveredPackages = Package::where('status', 'delivered')->count();
-    $pendingPackages = Package::where('status', 'pending')->count();
-    $recentPackages = Package::orderBy('updated_at', 'desc')->limit(10)->get();
+    $packagesInStorage = Package::where('status', 'pending')->orderBy('created_at', 'desc')->get();
+    $packagesInTransit = Package::with('koerier')->where('status', 'in_transit')->orderBy('updated_at', 'desc')->get();
 
-    return view('magazijn_medewerker', compact('packagesInTransit', 'deliveredPackages', 'pendingPackages', 'recentPackages'));
-})->middleware('auth')->name('magazijn-medewerker');
+    return view('magazijn_medewerker', compact('packagesInStorage', 'packagesInTransit', 'packagesDelivered'));
+})->middleware('auth')->name('magazijn');
 
 Route::get('/api/welcome', function () {
     Log::info('Request received: ' . request()->method() . ' ' . request()->path());
@@ -131,4 +154,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/nieuwe-verzending', [PackageController::class, 'store'])->name('nieuwe-verzending.store');
     Route::get('/mijn-verzendingen', [PackageController::class, 'index'])->name('mijn-verzendingen');
     Route::get('/pakketten-volgen', [PackageController::class, 'track'])->name('pakketten-volgen');
+});
+
+// Ontvanger routes
+Route::middleware('auth')->group(function () {
+    Route::get('/ontvanger-pakketten-volgen', [PackageController::class, 'ontvangerTrack'])->name('ontvanger-pakketten-volgen');
 });

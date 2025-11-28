@@ -16,9 +16,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create some additional random users
-        User::factory()->count(8)->create();
+        // Create at least one user for each role using faker
+        User::factory()->create(['role' => 'verzender']);
+        User::factory()->create(['role' => 'ontvanger']);
+        User::factory()->create(['role' => 'koerier']);
+        User::factory()->create(['role' => 'magazijn']);
+        User::factory()->create(['role' => 'backoffice']);
+        User::factory()->create(['role' => 'directie']);
 
-        Package::factory()->count(5)->inTransit()->create();
+        // Create some additional random users
+        User::factory()->count(5)->create();
     }
 }

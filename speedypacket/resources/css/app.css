@@ -9,3 +9,15 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* Mobile-friendly map styles */
+#map {
+    height: 400px;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    #map {
+        height: 300px;
+    }
+}

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Redirect;
 use App\Models\Package;
 use Illuminate\Support\Str;
 
+
 class PackageController extends Controller
 {
     public function create()
@@ -17,7 +18,9 @@ class PackageController extends Controller
             abort(403);
         }
 
-        return view('nieuwe-verzending');
+        $ontvangers = \App\Models\User::ontvangers();
+
+        return view('nieuwe-verzending', compact('ontvangers'));
     }
 
     public function store(Request $request)
@@ -28,21 +31,24 @@ class PackageController extends Controller
         }
 
         $validated = $request->validate([
-            'recipient_name' => 'required|string|max:255',
-            'recipient_email' => 'nullable|email|max:255',
-            'recipient_phone' => 'nullable|string|max:20',
+            'recipient_id' => 'required|exists:users,id',
             'recipient_address' => 'required|string',
             'description' => 'nullable|string|max:1000',
             'weight' => 'nullable|numeric|min:0|max:999999.99',
         ]);
 
+        $recipient = \App\Models\User::findOrFail($validated['recipient_id']);
+        if ($recipient->role !== 'ontvanger') {
+            abort(403, 'Selected user is not an ontvanger.');
+        }
+
         $trackingNumber = 'SP' . strtoupper(Str::random(10));
 
         Package::create([
             'user_id' => $user->id,
-            'recipient_name' => $validated['recipient_name'],
-            'recipient_email' => $validated['recipient_email'],
-            'recipient_phone' => $validated['recipient_phone'],
+            'recipient_name' => $recipient->name,
+            'recipient_email' => $recipient->email,
+            'recipient_phone' => $recipient->phone,
             'recipient_address' => $validated['recipient_address'],
             'description' => $validated['description'],
             'weight' => $validated['weight'],
@@ -60,7 +66,7 @@ class PackageController extends Controller
             abort(403);
         }
 
-        $packages = Package::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+        $packages = Package::with('koerier')->where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
 
         return view('mijn-verzendingen', compact('packages'));
     }
@@ -76,12 +82,53 @@ class PackageController extends Controller
         $trackingNumber = $request->input('tracking_number');
 
         if ($trackingNumber) {
-            $package = Package::where('tracking_number', $trackingNumber)->first();
+            $package = Package::with('koerier')->where('tracking_number', $trackingNumber)->first();
             if (!$package || $package->user_id !== $user->id) {
                 $package = null;
             }
         }
 
         return view('pakketten-volgen', compact('package', 'trackingNumber'));
+    }
+
+    public function ontvangerTrack(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'ontvanger') {
+            abort(403);
+        }
+
+        $package = null;
+        $trackingNumber = $request->input('tracking_number');
+
+        if ($trackingNumber) {
+            $package = Package::where('tracking_number', $trackingNumber)->first();
+            if (!$package || $package->recipient_email !== $user->email) {
+                $package = null;
+            }
+        }
+
+        return view('pakketten-volgen', compact('package', 'trackingNumber'));
+    }
+
+    public function take(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'koerier') {
+            abort(403);
+        }
+
+        $package = Package::findOrFail($id);
+
+        if ($package->status !== 'pending') {
+            return redirect()->route('koerier')->with('error', 'Pakket is niet beschikbaar om te nemen.');
+        }
+
+        $package->update([
+            'status' => 'in_transit',
+            'koerier_id' => $user->id
+        ]);
+
+        return redirect()->route('koerier')->with('success', 'Pakket genomen voor bezorging.');
     }
 }
