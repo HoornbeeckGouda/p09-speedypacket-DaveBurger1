@@ -3,13 +3,30 @@
 @section('title', 'Ontvanger Dashboard')
 
 @section('content')
+    <style>
+        .even-row { background-color: #f9fafb; }
+        .odd-row { background-color: #ffffff; }
+        .even-row:hover, .odd-row:hover { background-color: #f3f4f6; }
+        @media (max-width: 768px) {
+            .ontvanger-grid { grid-template-columns: 1fr !important; }
+        }
+        .dashboard-icon {
+            font-size: 1.5em;
+            color: var(--accent);
+            margin-right: 10px;
+            background: rgba(11, 95, 255, 0.1);
+            padding: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
     <div class="card" style="max-width:1200px;margin:0 auto;">
-        <h2 style="margin-top:0"><i class="fas fa-inbox"></i> Ontvanger Dashboard</h2>
+        <h2 style="margin-top:0"><i class="fas fa-inbox dashboard-icon"></i> Ontvanger Dashboard</h2>
         <p style="color:var(--muted)">Welkom terug, {{ auth()->user()->name }}. Hier zijn uw pakketten onderweg en hun locaties.</p>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        <div class="ontvanger-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
             <section>
-                <h4><i class="fas fa-truck"></i> Pakketten Onderweg</h4>
+                <h4><i class="fas fa-truck dashboard-icon"></i> Pakketten Onderweg</h4>
                 @if($packagesInTransit->count() > 0)
                     <table style="width:100%;border-collapse:collapse;margin-top:8px">
                         <thead style="text-align:left;color:var(--muted);font-size:13px">
@@ -30,8 +47,8 @@
                 @endif
             </section>
 
-            <section>
-                <h4><i class="fas fa-map-marked-alt"></i> Locatie</h4>
+            <section class="map-container">
+                <h4><i class="fas fa-map-marked-alt dashboard-icon"></i> Locatie</h4>
                 @if($packagesInTransit->count() > 0)
                     <div id="map" style="height: 400px; width: 100%; margin-top: 8px;" data-addresses='@json($packagesInTransit->pluck("recipient_address")->toArray())'></div>
                 @else

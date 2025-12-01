@@ -3,10 +3,21 @@
 @section('title', 'Dashboard')
 
 @section('content')
+    <style>
+        .dashboard-icon {
+            font-size: 1.5em;
+            color: var(--accent);
+            margin-right: 10px;
+            background: rgba(11, 95, 255, 0.1);
+            padding: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
     <div class="card">
         <!-- Hero Section -->
         <div style="background: linear-gradient(135deg, var(--accent), #4f46e5); color: #fff; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-            <h2 style="margin: 0; font-size: 28px;"><i class="fas fa-tachometer-alt"></i> Welkom terug, {{ auth()->user()->name }}!</h2>
+            <h2 style="margin: 0; font-size: 28px;"><i class="fas fa-tachometer-alt dashboard-icon"></i> Welkom terug, {{ auth()->user()->name }}!</h2>
             <p style="margin: 8px 0 0; opacity: 0.9;">Beheer uw verzendingen eenvoudig en efficiënt.</p>
         </div>
 

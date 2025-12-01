@@ -3,6 +3,14 @@
 @section('title', 'Koerier Dashboard')
 
 @section('content')
+    <style>
+        .even-row { background-color: #f9fafb; }
+        .odd-row { background-color: #ffffff; }
+        .even-row:hover, .odd-row:hover { background-color: #f3f4f6; }
+        @media (max-width: 768px) {
+            .koerier-grid { grid-template-columns: 1fr !important; }
+        }
+    </style>
     <div class="card" style="margin:0 auto;" id="koerier-page">
         <!-- Hero Section -->
         <div style="background: linear-gradient(135deg, var(--accent), #4f46e5); color: #fff; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
@@ -10,7 +18,7 @@
             <p style="margin: 8px 0 0; opacity: 0.9;">Beheer uw bezorgingen efficiënt en overzichtelijk.</p>
         </div>
 
-        <section class="koerier-section-span" style="margin-bottom: 24px;">
+        <section class="koerier-section-span map-container" style="margin-bottom: 24px;">
             <h4 style="margin-bottom: 12px;"><i class="fas fa-route"></i> Route</h4>
             @if($packagesToDeliver->count() > 0)
                 <div style="background: #fff; border: 1px solid #eef2ff; border-radius: 8px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
@@ -70,8 +78,8 @@
                                 <tr><th style="padding:12px 16px;border-bottom:1px solid #eef2ff">Tracking Nummer</th><th style="padding:12px 16px;border-bottom:1px solid #eef2ff">Ontvanger</th><th style="padding:12px 16px;border-bottom:1px solid #eef2ff">Adres</th><th style="padding:12px 16px;border-bottom:1px solid #eef2ff">Actie</th></tr>
                             </thead>
                             <tbody>
-                            @foreach($pendingPackages as $package)
-                                <tr style="transition: background-color 0.2s;">
+                            @foreach($pendingPackages as $index => $package)
+                                <tr class="{{ $index % 2 == 0 ? 'even-row' : 'odd-row' }}">
                                     <td style="padding:12px 16px;border-bottom:1px solid #f1f5f9">{{ $package->tracking_number }}</td>
                                     <td style="padding:12px 16px;border-bottom:1px solid #f1f5f9">{{ $package->recipient_name }}</td>
                                     <td style="padding:12px 16px;border-bottom:1px solid #f1f5f9">{{ $package->recipient_address }}</td>

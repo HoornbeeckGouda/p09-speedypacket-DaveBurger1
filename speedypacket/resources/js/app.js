@@ -42,6 +42,27 @@ window.addEventListener('DOMContentLoaded', function() {
     console.log('Map script loaded on DOMContentLoaded. mapElement exists:', !!mapElement);
     if (!mapElement) return;
 
+    // Samsung Android Chrome fix: Ensure map container has proper dimensions before initializing
+    function ensureMapDimensions(el) {
+        const rect = el.getBoundingClientRect();
+        console.log('Map element dimensions:', rect.width, 'x', rect.height);
+
+        // Force minimum dimensions for Samsung Android Chrome
+        if (rect.height < 50 || rect.width < 50) {
+            console.log('Map container too small, forcing dimensions');
+            el.style.minHeight = '300px';
+            el.style.minWidth = '100%';
+            el.style.height = '400px';
+            el.style.width = '100%';
+            el.style.display = 'block';
+        }
+
+        // Additional Samsung fix: Force layout recalculation
+        el.offsetHeight; // Trigger layout
+    }
+
+    ensureMapDimensions(mapElement);
+
     function showMapFallback(el, message = 'Kaart kan niet worden geladen op dit apparaat.', withButton = false) {
         console.log('showMapFallback called. withButton=', withButton);
         try {
@@ -90,14 +111,10 @@ window.addEventListener('DOMContentLoaded', function() {
     async function initMap(el) {
         console.log('initMap called for element:', el && el.id);
         try {
-            // Force map element to have proper dimensions
-            if (!el.style.height) el.style.height = '400px';
-            if (!el.style.width) el.style.width = '100%';
-            
-            const map = L.map(el.id).setView([52.3676, 4.9041], 10); // Default to Amsterdam
+            const map = L.map(el).setView([52.3676, 4.9041], 10);
 
             const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                attribution: '&copy; OpenStreetMap contributors'
             }).addTo(map);
 
             // Get addresses from data attribute (be robust to HTML-escaped attributes)
@@ -117,6 +134,11 @@ window.addEventListener('DOMContentLoaded', function() {
                 try { addresses = JSON.parse(el.dataset && el.dataset.addresses ? el.dataset.addresses : '[]'); } catch(e) { addresses = []; }
             }
             console.log('Parsed addresses:', addresses);
+
+            // Prepend fixed starting point
+            const fixedStart = 'Overslagweg 2, Waddinxveen, Netherlands';
+            addresses = [fixedStart, ...addresses];
+            console.log('Parsed addresses with fixed start:', addresses);
 
             // If the map container has collapsed height on mobile, force a sensible minimum.
             try {
@@ -162,7 +184,9 @@ window.addEventListener('DOMContentLoaded', function() {
                                 createMarker: () => null, // Disable default markers, we have our own
                                 lineOptions: {
                                     styles: [{ color: 'blue', weight: 6 }]
-                                }
+                                },
+                                showInstructions: true,
+                                collapsible: true
                             }).addTo(map);
                             console.log('Routing added successfully');
                         } catch (e) {

@@ -16,6 +16,11 @@
     width: 100%;
 }
 
+/* Samsung Android Chrome fixes for Leaflet containers */
+#map, .map-container, .leaflet-container {
+    min-height: 300px !important;
+}
+
 @media (max-width: 768px) {
     #map {
         height: 300px;
