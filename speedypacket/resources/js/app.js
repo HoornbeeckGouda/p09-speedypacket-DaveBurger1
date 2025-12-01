@@ -37,22 +37,100 @@ async function geocodeAddress(address) {
 }
 
 // Initialize map if element exists
-document.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', function() {
     const mapElement = document.getElementById('map');
-    if (mapElement) {
-        const map = L.map('map').setView([52.3676, 4.9041], 10); // Default to Amsterdam
+    console.log('Map script loaded on DOMContentLoaded. mapElement exists:', !!mapElement);
+    if (!mapElement) return;
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+    function showMapFallback(el, message = 'Kaart kan niet worden geladen op dit apparaat.', withButton = false) {
+        console.log('showMapFallback called. withButton=', withButton);
+        try {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'map-fallback';
+            wrapper.style.padding = '16px';
+            wrapper.style.background = '#fff';
+            wrapper.style.borderRadius = '8px';
+            wrapper.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+            wrapper.style.color = 'var(--muted)';
+            wrapper.innerHTML = `<p style="margin:0 0 8px;font-size:14px">${message}</p>`;
 
-        // Get addresses from data attribute
-        const addresses = JSON.parse(mapElement.dataset.addresses || '[]');
+            if (withButton) {
+                const btn = document.createElement('button');
+                btn.textContent = 'Toon kaart';
+                btn.style.padding = '8px 12px';
+                btn.style.background = 'var(--accent)';
+                btn.style.color = '#fff';
+                btn.style.border = 'none';
+                btn.style.borderRadius = '6px';
+                btn.style.cursor = 'pointer';
+                btn.addEventListener('click', function() {
+                    // recreate the map element and initialize
+                    const newMap = document.createElement('div');
+                    newMap.id = 'map';
+                    // preserve inline styles if any
+                    newMap.style.height = mapElement.style.height || '400px';
+                    newMap.style.width = mapElement.style.width || '100%';
+                    newMap.style.borderRadius = mapElement.style.borderRadius || '';
+                    // attach addresses data if available
+                    if (mapElement.dataset && mapElement.dataset.addresses) {
+                        newMap.dataset.addresses = mapElement.dataset.addresses;
+                    }
+                    wrapper.replaceWith(newMap);
+                    initMap(newMap);
+                });
+                wrapper.appendChild(btn);
+            }
 
-        if (addresses.length > 0) {
-            console.log('Addresses to geocode:', addresses);
-            // Geocode all addresses
-            Promise.all(addresses.map(address => geocodeAddress(address))).then(coords => {
+            mapElement.replaceWith(wrapper);
+        } catch (e) {
+            console.error('Failed to render map fallback', e);
+        }
+    }
+
+    async function initMap(el) {
+        console.log('initMap called for element:', el && el.id);
+        try {
+            // Force map element to have proper dimensions
+            if (!el.style.height) el.style.height = '400px';
+            if (!el.style.width) el.style.width = '100%';
+            
+            const map = L.map(el.id).setView([52.3676, 4.9041], 10); // Default to Amsterdam
+
+            const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Get addresses from data attribute (be robust to HTML-escaped attributes)
+            let addresses = [];
+            try {
+                const raw = el.getAttribute('data-addresses');
+                console.log('Raw data-addresses attribute:', raw && raw.substring(0, 200));
+                if (raw) {
+                    // Some Blade outputs may HTML-escape quotes - try to unescape common entities
+                    let cleaned = raw.replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+                    // Trim any trailing/leading whitespace
+                    cleaned = cleaned.trim();
+                    addresses = JSON.parse(cleaned || '[]');
+                }
+            } catch (err) {
+                console.warn('Failed to parse addresses from data-addresses, falling back to dataset or empty', err);
+                try { addresses = JSON.parse(el.dataset && el.dataset.addresses ? el.dataset.addresses : '[]'); } catch(e) { addresses = []; }
+            }
+            console.log('Parsed addresses:', addresses);
+
+            // If the map container has collapsed height on mobile, force a sensible minimum.
+            try {
+                const rect = el.getBoundingClientRect();
+                if (rect.height < 50) {
+                    console.log('Map container height is small ('+rect.height+'), applying min-height 300px');
+                    el.style.height = '300px';
+                }
+            } catch(e) { /* ignore */ }
+
+            if (addresses.length > 0) {
+                console.log('Addresses to geocode:', addresses);
+                // Geocode all addresses
+                const coords = await Promise.all(addresses.map(address => geocodeAddress(address)));
                 console.log('Geocoded coords:', coords);
                 const validCoords = coords.filter(coord => coord !== null);
                 console.log('Valid coords:', validCoords);
@@ -77,23 +155,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Add routing if more than one point
                     if (validCoords.length > 1) {
-                        L.Routing.control({
-                            waypoints: validCoords.map(coord => L.latLng(coord[0], coord[1])),
-                            routeWhileDragging: false,
-                            createMarker: () => null, // Disable default markers, we have our own
-                            lineOptions: {
-                                styles: [{ color: 'blue', weight: 6 }]
-                            }
-                        }).addTo(map);
+                        try {
+                            L.Routing.control({
+                                waypoints: validCoords.map(coord => L.latLng(coord[0], coord[1])),
+                                routeWhileDragging: false,
+                                createMarker: () => null, // Disable default markers, we have our own
+                                lineOptions: {
+                                    styles: [{ color: 'blue', weight: 6 }]
+                                }
+                            }).addTo(map);
+                            console.log('Routing added successfully');
+                        } catch (e) {
+                            console.warn('Routing failed to initialize', e);
+                        }
                     }
+                    
+                    // Invalidate size after all content is loaded
+                    setTimeout(() => { try { map.invalidateSize(); } catch(e){} }, 300);
                 } else {
                     console.warn('No valid coordinates found for addresses');
+                    showMapFallback(el, 'Geen locatiegegevens beschikbaar voor deze route.');
                 }
-            }).catch(error => {
-                console.error('Geocoding error:', error);
-            });
-        } else {
-            console.log('No addresses to display');
+            } else {
+                console.log('No addresses to display');
+                showMapFallback(el, 'Geen route-adressen om te tonen.');
+            }
+        } catch (e) {
+            console.error('Map initialization failed', e);
+            showMapFallback(el, 'Kaart kon niet worden geladen op dit apparaat.');
         }
+    }
+
+    // Always try to initialize the map, with fallback if it fails
+    try {
+        initMap(mapElement);
+    } catch (e) {
+        console.error('Map initialization failed, showing fallback', e);
+        showMapFallback(mapElement, 'Kaart kon niet worden geladen op dit apparaat.', true);
     }
 });

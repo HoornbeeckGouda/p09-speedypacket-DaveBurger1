@@ -33,7 +33,7 @@
             <section>
                 <h4><i class="fas fa-map-marked-alt"></i> Locatie</h4>
                 @if($packagesInTransit->count() > 0)
-                    <div id="map" style="height: 400px; width: 100%; margin-top: 8px;" data-addresses="{{ json_encode($packagesInTransit->pluck('recipient_address')->toArray()) }}"></div>
+                    <div id="map" style="height: 400px; width: 100%; margin-top: 8px;" data-addresses='@json($packagesInTransit->pluck("recipient_address")->toArray())'></div>
                 @else
                     <p style="color:var(--muted)">Geen locatie beschikbaar.</p>
                 @endif

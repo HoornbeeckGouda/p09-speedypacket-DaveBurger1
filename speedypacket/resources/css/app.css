@@ -34,3 +34,19 @@
         overflow-x: auto;
     }
 }
+
+/* General mobile layout improvements */
+@media (max-width: 640px) {
+    .wrap {
+        padding: 0;
+        max-width: none;
+    }
+    .card {
+        padding: 16px;
+        border-radius: 0;
+        max-width: none !important;
+    }
+}
+    }
+}
+        border-radius: 0;

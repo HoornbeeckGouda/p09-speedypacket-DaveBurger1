@@ -95,7 +95,7 @@ Route::get('/koerier', function () {
     }
 
     $packagesToDeliver = Package::where('status', 'in_transit')->orderBy('id')->get();
-    $pendingPackages = Package::where('status', 'in_warehouse')->orderBy('id')->get();
+    $pendingPackages = Package::where('status', 'pending')->orderBy('id')->get();
     $startAddress = 'Overslagweg 2, Waddinxveen, Netherlands';
 
     return view('koerier', compact('packagesToDeliver', 'pendingPackages', 'startAddress'));

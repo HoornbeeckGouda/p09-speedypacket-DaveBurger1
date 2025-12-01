@@ -98,8 +98,11 @@
                                         @if($p->status == 'pending') background:#fef3c7;color:#d97706;
                                         @elseif($p->status == 'in_transit') background:#dbeafe;color:#2563eb;
                                         @elseif($p->status == 'delivered') background:#d1fae5;color:#065f46;
+                                        @elseif($p->status == 'in_warehouse') background:#e0e7ff;color:#3730a3;
                                         @endif">
-                                        {{ ucfirst(str_replace('_', ' ', $p->status)) }}
+                                        @if($p->status == 'in_warehouse') In afwachting
+                                        @else {{ ucfirst(str_replace('_', ' ', $p->status)) }}
+                                        @endif
                                     </span>
                                 </td>
                                 <td style="padding:16px;color:#111827">{{ $p->user->name ?? 'N/A' }}</td>

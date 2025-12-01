@@ -3,14 +3,37 @@
 @section('title', 'Koerier Dashboard')
 
 @section('content')
-    <div class="card" style="max-width:1200px;margin:0 auto;">
+    <div class="card" style="margin:0 auto;" id="koerier-page">
         <!-- Hero Section -->
         <div style="background: linear-gradient(135deg, var(--accent), #4f46e5); color: #fff; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
             <h2 style="margin: 0; font-size: 28px;"><i class="fas fa-truck"></i> Welkom terug, {{ auth()->user()->name }}!</h2>
             <p style="margin: 8px 0 0; opacity: 0.9;">Beheer uw bezorgingen efficiënt en overzichtelijk.</p>
         </div>
 
-        <div class="koerier-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        <section class="koerier-section-span" style="margin-bottom: 24px;">
+            <h4 style="margin-bottom: 12px;"><i class="fas fa-route"></i> Route</h4>
+            @if($packagesToDeliver->count() > 0)
+                <div style="background: #fff; border: 1px solid #eef2ff; border-radius: 8px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <div id="map" style="height: 400px; width: 100%; border-radius: 8px;" data-addresses='@json(collect([$startAddress])->merge($packagesToDeliver->pluck("recipient_address")->toArray()))'></div>
+                    <div style="margin-top:16px; padding: 16px; background: #f8fafc; border-radius: 8px;">
+                        <h5 style="margin: 0 0 12px; color: #111;">Route Overzicht</h5>
+                        <ol style="margin:0; padding-left: 20px; color:var(--muted); font-size: 14px;">
+                            <li style="margin-bottom: 8px;"><strong>Start:</strong> {{ $startAddress }}</li>
+                        @foreach($packagesToDeliver as $index => $package)
+                            <li style="margin-bottom: 8px;"><strong>{{ $index + 1 }}.</strong> {{ $package->recipient_address }} ({{ $package->recipient_name }})</li>
+                        @endforeach
+                        </ol>
+                    </div>
+                </div>
+            @else
+                <div style="background: #fff; border: 1px solid #eef2ff; border-radius: 8px; padding: 24px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <i class="fas fa-map" style="font-size: 48px; color: var(--muted); margin-bottom: 16px;"></i>
+                    <p style="color:var(--muted); margin: 0;">Geen route beschikbaar.</p>
+                </div>
+            @endif
+        </section>
+
+        <div class="koerier-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;" id="koerier-grid">
             <section>
                 <h4 style="margin-bottom: 12px;"><i class="fas fa-box"></i> Pakketten om te Bezorgen</h4>
                 @if($packagesToDeliver->count() > 0)
@@ -67,29 +90,6 @@
                     <div style="background: #fff; border: 1px solid #eef2ff; border-radius: 8px; padding: 24px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                         <i class="fas fa-inbox" style="font-size: 48px; color: var(--muted); margin-bottom: 16px;"></i>
                         <p style="color:var(--muted); margin: 0;">Geen beschikbare pakketten.</p>
-                    </div>
-                @endif
-            </section>
-
-            <section class="koerier-section-span" style="grid-column: span 2;">
-                <h4 style="margin-bottom: 12px;"><i class="fas fa-route"></i> Route</h4>
-                @if($packagesToDeliver->count() > 0)
-                    <div style="background: #fff; border: 1px solid #eef2ff; border-radius: 8px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                        <div id="map" style="height: 400px; width: 100%; border-radius: 8px;" data-addresses="{{ json_encode(collect([$startAddress])->merge($packagesToDeliver->pluck('recipient_address'))->toArray()) }}"></div>
-                        <div style="margin-top:16px; padding: 16px; background: #f8fafc; border-radius: 8px;">
-                            <h5 style="margin: 0 0 12px; color: #111;">Route Overzicht</h5>
-                            <ol style="margin:0; padding-left: 20px; color:var(--muted); font-size: 14px;">
-                                <li style="margin-bottom: 8px;"><strong>Start:</strong> {{ $startAddress }}</li>
-                            @foreach($packagesToDeliver as $index => $package)
-                                <li style="margin-bottom: 8px;"><strong>{{ $index + 1 }}.</strong> {{ $package->recipient_address }} ({{ $package->recipient_name }})</li>
-                            @endforeach
-                            </ol>
-                        </div>
-                    </div>
-                @else
-                    <div style="background: #fff; border: 1px solid #eef2ff; border-radius: 8px; padding: 24px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                        <i class="fas fa-map" style="font-size: 48px; color: var(--muted); margin-bottom: 16px;"></i>
-                        <p style="color:var(--muted); margin: 0;">Geen route beschikbaar.</p>
                     </div>
                 @endif
             </section>

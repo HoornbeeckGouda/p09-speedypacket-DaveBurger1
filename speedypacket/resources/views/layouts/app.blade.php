@@ -9,7 +9,7 @@
         :root{--accent:#0b5fff;--muted:#6b7280;--bg:#f3f4f6}
         *{box-sizing:border-box}
         body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; padding:0; background:var(--bg); color:#111}
-        .wrap{width:100%;max-width:none;margin:0;padding:34px}
+        .wrap{width:100%;max-width:1200px;margin:0 auto;padding:34px}
         .card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 8px 24px rgba(15,23,42,0.06);width:100%;box-sizing:border-box}
         header{display:flex;align-items:center;justify-content:space-between}
         .brand h1{margin:0;font-size:20px}
@@ -23,7 +23,16 @@
         label{font-size:14px;color:#111;display:block;margin-top:12px}
         .form-row{margin-top:8px}
         main{margin-top:18px}
-        @media (max-width:640px){.wrap{padding:12px}.card{padding:16px}}
+        @media (max-width: 640px) {
+            main{margin-top:0}
+            header{display:none}
+            .wrap{padding:0}
+            .card{background:none;border:none;padding:0;margin:0}
+            #koerier-page{background:#fff;border-radius:0;padding:16px;margin:0}
+            #koerier-grid{grid-template-columns:1fr !important;gap:0 !important}
+            #map{height:300px !important;width:100% !important;display:block !important}
+            div[style*="height: 400px"]{height:300px !important}
+        }
     </style>
 </head>
 <body>
