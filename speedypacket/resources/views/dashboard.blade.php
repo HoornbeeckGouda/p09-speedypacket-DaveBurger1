@@ -44,15 +44,10 @@
                         <a href="{{ route('pakketten-volgen') }}" class="btn secondary" style="display: flex; align-items: center; text-decoration: none; padding: 12px 16px;">
                             <i class="fas fa-search" style="margin-right: 8px;"></i> Pakketten Volgen
                         </a>
-                        <a href="#" class="btn secondary" style="display: flex; align-items: center; text-decoration: none; padding: 12px 16px;">
-                            <i class="fas fa-chart-bar" style="margin-right: 8px;"></i> Rapporten
-                        </a>
                     </div>
                 </section>
                 <section>
-                    <h4 style="margin-bottom: 12px;"><i class="fas fa-user-cog"></i> Rol-specifieke Acties</h4>
                     <ul style="color:var(--muted); list-style: none; padding: 0;">
-                        <li style="margin-bottom: 8px;"><a href="{{ route('profile') }}" style="color: var(--accent); text-decoration: none;"><i class="fas fa-user"></i> Bekijk profiel</a></li>
                         @if(auth()->user()->role === 'directie')
                             <li style="margin-bottom: 8px;"><a href="{{ route('directie') }}" style="color: var(--accent); text-decoration: none;"><i class="fas fa-building"></i> Directie Home</a></li>
                         @endif

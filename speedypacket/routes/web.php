@@ -95,7 +95,7 @@ Route::get('/koerier', function () {
     }
 
     $packagesToDeliver = Package::where('status', 'in_transit')->orderBy('id')->get();
-    $pendingPackages = Package::where('status', 'pending')->orderBy('id')->get();
+    $pendingPackages = Package::where('status', 'in_warehouse')->orderBy('id')->get();
     $startAddress = 'Overslagweg 2, Waddinxveen, Netherlands';
 
     return view('koerier', compact('packagesToDeliver', 'pendingPackages', 'startAddress'));
@@ -139,6 +139,7 @@ Route::get('/magazijn', function () {
 
     $packagesInStorage = Package::where('status', 'pending')->orderBy('created_at', 'desc')->get();
     $packagesInTransit = Package::with('koerier')->where('status', 'in_transit')->orderBy('updated_at', 'desc')->get();
+    $packagesDelivered = Package::where('status', 'delivered')->orderBy('updated_at', 'desc')->get();
 
     return view('magazijn_medewerker', compact('packagesInStorage', 'packagesInTransit', 'packagesDelivered'));
 })->middleware('auth')->name('magazijn');
@@ -153,6 +154,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/nieuwe-verzending', [PackageController::class, 'create'])->name('nieuwe-verzending');
     Route::post('/nieuwe-verzending', [PackageController::class, 'store'])->name('nieuwe-verzending.store');
     Route::get('/mijn-verzendingen', [PackageController::class, 'index'])->name('mijn-verzendingen');
+    Route::post('/pakketten/send/{id}', [PackageController::class, 'send'])->name('pakketten.send');
     Route::get('/pakketten-volgen', [PackageController::class, 'track'])->name('pakketten-volgen');
 });
 

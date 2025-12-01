@@ -52,7 +52,7 @@ class PackageController extends Controller
             'recipient_address' => $validated['recipient_address'],
             'description' => $validated['description'],
             'weight' => $validated['weight'],
-            'status' => 'pending',
+            'status' => 'in_warehouse',
             'tracking_number' => $trackingNumber,
         ]);
 
@@ -120,7 +120,7 @@ class PackageController extends Controller
 
         $package = Package::findOrFail($id);
 
-        if ($package->status !== 'pending') {
+        if ($package->status !== 'in_warehouse') {
             return redirect()->route('koerier')->with('error', 'Pakket is niet beschikbaar om te nemen.');
         }
 

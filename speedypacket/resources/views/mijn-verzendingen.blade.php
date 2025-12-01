@@ -43,7 +43,11 @@
                                     <small style="color: var(--muted);">{{ $package->recipient_address }}</small>
                                 </td>
                                 <td style="padding: 12px;">
-                                    @if($package->status === 'pending')
+                                    @if($package->status === 'in_warehouse')
+                                        <span style="background: #e0e7ff; color: #3730a3; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                                            <i class="fas fa-warehouse"></i> In Magazijn
+                                        </span>
+                                    @elseif($package->status === 'pending')
                                         <span style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
                                             <i class="fas fa-clock"></i> In Behandeling
                                         </span>

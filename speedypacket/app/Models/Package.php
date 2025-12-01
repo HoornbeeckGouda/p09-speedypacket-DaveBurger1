@@ -19,6 +19,7 @@ class Package extends Model
         'weight',
         'status',
         'tracking_number',
+        'koerier_id',
     ];
 
     protected $casts = [
