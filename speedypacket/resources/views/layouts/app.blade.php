@@ -9,7 +9,7 @@
         :root{--accent:#0b5fff;--muted:#6b7280;--bg:#f3f4f6}
         *{box-sizing:border-box}
         body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; padding:0; background:var(--bg); color:#111}
-        .wrap{max-width:980px;margin:34px auto;padding:18px}
+        .wrap{width:100%;max-width:none;margin:0;padding:34px}
         .card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 8px 24px rgba(15,23,42,0.06);width:100%;box-sizing:border-box}
         header{display:flex;align-items:center;justify-content:space-between}
         .brand h1{margin:0;font-size:20px}
@@ -23,11 +23,11 @@
         label{font-size:14px;color:#111;display:block;margin-top:12px}
         .form-row{margin-top:8px}
         main{margin-top:18px}
-        @media (max-width:640px){.wrap{margin:18px;padding:12px}.card{padding:16px}}
+        @media (max-width:640px){.wrap{padding:12px}.card{padding:16px}}
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="wrap">
         <header>
             <div>
                 

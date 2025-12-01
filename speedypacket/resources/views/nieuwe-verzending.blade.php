@@ -4,7 +4,6 @@
 
 @section('content')
     <div class="card">
-        <h2 style="margin-bottom: 24px;"><i class="fas fa-plus-circle"></i> Nieuwe Verzending Aanmaken</h2>
 
         @if($errors->any())
             <div style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 18px; border: 1px solid #fecaca;">

@@ -3,7 +3,7 @@
 @section('title', 'Directie Home')
 
 @section('content')
-    <div class="card" style="max-width:1200px;margin:0 auto;padding:24px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.1)">
+    <div class="card" style="width:100%;max-width:none;margin:0;padding:24px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.1)">
         <h2 style="margin-top:0;margin-bottom:8px;font-size:32px;font-weight:700">Directie — Overzicht</h2>
         <p style="color:var(--muted);margin-bottom:24px;font-size:16px">Hier vind je kernstatistieken en snelle links naar systeemonderdelen.</p>
 
