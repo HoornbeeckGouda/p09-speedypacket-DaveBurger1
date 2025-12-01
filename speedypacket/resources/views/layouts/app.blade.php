@@ -23,9 +23,21 @@
         label{font-size:14px;color:#111;display:block;margin-top:12px}
         .form-row{margin-top:8px}
         main{margin-top:18px}
+
+        /* mobile toggle and menu (hidden by default on desktop) */
+        .mobile-toggle{display:none;background:transparent;border:0;font-size:20px;cursor:pointer;padding:6px}
+        .mobile-menu{display:none;background:#fff;border-radius:8px;padding:12px;box-shadow:0 8px 24px rgba(15,23,42,0.06);margin-top:6px}
+        .mobile-menu a{display:block;color:var(--accent);text-decoration:none;margin:8px 0;font-weight:600}
+        .mobile-menu .btn{display:block;width:100%;text-align:center}
+
         @media (max-width: 640px) {
             main{margin-top:0}
-            header{display:none}
+            header{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:12px}
+            /* hide desktop nav on small screens and show mobile toggle */
+            .desktop-nav{display:none}
+            .mobile-toggle{display:inline-flex}
+            .mobile-menu{display:none;width:100%}
+            .mobile-menu.open{display:block}
             .wrap{padding:0}
             .card{background:none;border:none;padding:0;margin:0}
             #koerier-page{background:#fff;border-radius:0;padding:16px;margin:0}
@@ -41,7 +53,9 @@
             <div>
                 
             </div>
-            <nav>
+            <button class="mobile-toggle" aria-expanded="false" aria-label="Open menu">☰</button>
+
+            <nav class="desktop-nav">
                 @guest
                     <a href="{{ route('login') }}">Login</a>
                 @endguest
@@ -54,6 +68,21 @@
                     </form>
                 @endauth
             </nav>
+
+            {{-- Mobile menu (duplicate links for mobile toggle) --}}
+            <div class="mobile-menu" aria-hidden="true">
+                @guest
+                    <a href="{{ route('login') }}">Login</a>
+                @endguest
+                @auth
+                    <a href="{{ url('/') }}">Home</a>
+                    <a href="{{ route('dashboard') }}">Dashboard</a>
+                    <form method="POST" action="{{ route('logout') }}" style="margin-top:8px">
+                        @csrf
+                        <button class="btn" type="submit">Uitloggen</button>
+                    </form>
+                @endauth
+            </div>
         </header>
 
         <main>
@@ -61,5 +90,19 @@
         </main>
     </div>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            var btn = document.querySelector('.mobile-toggle');
+            var menu = document.querySelector('.mobile-menu');
+            if(!btn || !menu) return;
+            btn.addEventListener('click', function(){
+                var open = menu.classList.toggle('open');
+                btn.setAttribute('aria-expanded', open);
+                menu.setAttribute('aria-hidden', !open);
+                btn.textContent = open ? '✕' : '☰';
+            });
+        });
+    </script>
 </body>
 </html>
