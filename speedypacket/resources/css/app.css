@@ -21,3 +21,16 @@
         height: 300px;
     }
 }
+
+/* Koerier page mobile responsiveness */
+@media (max-width: 768px) {
+    .koerier-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .koerier-section-span {
+        grid-column: span 1 !important;
+    }
+    .table-container {
+        overflow-x: auto;
+    }
+}
