@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
 use App\Models\Package;
 use Illuminate\Support\Str;
 
@@ -130,5 +131,72 @@ class PackageController extends Controller
         ]);
 
         return redirect()->route('koerier')->with('success', 'Pakket genomen voor bezorging.');
+    }
+
+    public function deliver(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'koerier') {
+            abort(403);
+        }
+
+        $package = Package::findOrFail($id);
+
+        if ($package->status !== 'in_transit' || $package->koerier_id !== $user->id) {
+            return redirect()->route('koerier')->with('error', 'Pakket kan niet worden bezorgd.');
+        }
+
+        $package->update([
+            'status' => 'delivered'
+        ]);
+
+        return redirect()->route('koerier')->with('success', 'Pakket succesvol bezorgd.');
+    }
+
+    public function getDeliveredPackages()
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'backoffice') {
+            abort(403);
+        }
+
+        $packages = Package::where('status', 'delivered')->with('user', 'koerier')->get();
+
+        return response()->json($packages);
+    }
+
+    public function billPackage(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'backoffice') {
+            abort(403);
+        }
+
+        $package = Package::findOrFail($id);
+
+        if ($package->status !== 'delivered') {
+            return redirect()->route('backoffice')->with('error', 'Pakket is niet bezorgd.');
+        }
+
+        $package->update(['status' => 'billed']);
+
+        return redirect()->route('backoffice')->with('success', 'Pakket succesvol gefactureerd.');
+    }
+    public function payPackage(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'ontvanger') {
+            abort(403);
+        }
+
+        $package = Package::findOrFail($id);
+
+        if ($package->status !== 'billed' || $package->recipient_email !== $user->email) {
+            return redirect()->route('ontvanger')->with('error', 'Pakket kan niet worden betaald.');
+        }
+
+        $package->delete();
+
+        return redirect()->route('ontvanger')->with('success', 'Bedankt voor uw betaling! Het pakket is succesvol betaald en verwijderd.');
     }
 }

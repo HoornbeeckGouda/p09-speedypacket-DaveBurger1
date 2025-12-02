@@ -23,6 +23,9 @@
         label{font-size:14px;color:#111;display:block;margin-top:12px}
         .form-row{margin-top:8px}
         main{margin-top:18px}
+        .alert{background:#fef3c7;color:#92400e;padding:12px 16px;border-radius:8px;margin-bottom:16px;border-left:4px solid #f59e0b}
+        .alert.error{background:#fee2e2;color:#991b1b;border-left-color:#dc2626}
+        .alert.success{background:#d1fae5;color:#065f46;border-left-color:#10b981}
 
         /* mobile toggle and menu (hidden by default on desktop) */
         .mobile-toggle{display:none;background:transparent;border:0;font-size:20px;cursor:pointer;padding:6px}
@@ -86,6 +89,12 @@
         </header>
 
         <main>
+            @if(session('success'))
+                <div class="alert success">{{ session('success') }}</div>
+            @endif
+            @if(session('error'))
+                <div class="alert error">{{ session('error') }}</div>
+            @endif
             @yield('content')
         </main>
     </div>

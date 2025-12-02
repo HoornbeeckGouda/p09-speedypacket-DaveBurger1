@@ -48,7 +48,7 @@
                     <div class="table-container" style="background: #fff; border: 1px solid #eef2ff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                         <table style="width:100%;border-collapse:collapse;">
                             <thead style="background: #f8fafc; text-align:left;color:var(--muted);font-size:13px">
-                                <tr><th style="padding:12px 16px;border-bottom:1px solid #eef2ff">Tracking Nummer</th><th style="padding:12px 16px;border-bottom:1px solid #eef2ff">Ontvanger</th><th style="padding:12px 16px;border-bottom:1px solid #eef2ff">Adres</th></tr>
+                                <tr><th style="padding:12px 16px;border-bottom:1px solid #eef2ff">Tracking Nummer</th><th style="padding:12px 16px;border-bottom:1px solid #eef2ff">Ontvanger</th><th style="padding:12px 16px;border-bottom:1px solid #eef2ff">Adres</th><th style="padding:12px 16px;border-bottom:1px solid #eef2ff">Actie</th></tr>
                             </thead>
                             <tbody>
                             @foreach($packagesToDeliver as $package)
@@ -56,6 +56,12 @@
                                     <td style="padding:12px 16px;border-bottom:1px solid #f1f5f9">{{ $package->tracking_number }}</td>
                                     <td style="padding:12px 16px;border-bottom:1px solid #f1f5f9">{{ $package->recipient_name }}</td>
                                     <td style="padding:12px 16px;border-bottom:1px solid #f1f5f9">{{ $package->recipient_address }}</td>
+                                    <td style="padding:12px 16px;border-bottom:1px solid #f1f5f9">
+                                        <form method="POST" action="{{ route('koerier.deliver', $package->id) }}" style="display:inline;">
+                                            @csrf
+                                            <button type="submit" style="background-color:#28a745;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:14px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#218838'" onmouseout="this.style.backgroundColor='#28a745'">Bezorgd</button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @endforeach
                             </tbody>

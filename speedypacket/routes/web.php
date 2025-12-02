@@ -54,6 +54,8 @@ Route::get('/dashboard', function () {
             return redirect()->route('ontvanger');
         case 'magazijn':
             return redirect()->route('magazijn');
+        case 'backoffice':
+            return redirect()->route('backoffice');
         default:
             // Fallback to general dashboard for other roles
             $totalPackages = Package::count();
@@ -102,6 +104,7 @@ Route::get('/koerier', function () {
 })->middleware('auth')->name('koerier');
 
 Route::post('/koerier/take/{id}', [PackageController::class, 'take'])->middleware('auth')->name('koerier.take');
+Route::post('/koerier/deliver/{id}', [PackageController::class, 'deliver'])->middleware('auth')->name('koerier.deliver');
 
 Route::post('/magazijn/assign/{id}', [PackageController::class, 'assign'])->middleware('auth')->name('magazijn.assign');
 
@@ -114,6 +117,7 @@ Route::get('/ontvanger', function () {
     $packagesInTransit = Package::where('status', 'in_transit')->where('recipient_email', $user->email)->get();
     $deliveredPackages = Package::where('status', 'delivered')->where('recipient_email', $user->email)->count();
     $pendingPackages = Package::where('status', 'pending')->where('recipient_email', $user->email)->count();
+    $billedPackages = Package::where('status', 'billed')->where('recipient_email', $user->email)->get();
     $recentPackages = Package::where('recipient_email', $user->email)->orderBy('updated_at', 'desc')->limit(10)->get();
 
     // Get koerier locations for packages in transit
@@ -128,7 +132,7 @@ Route::get('/ontvanger', function () {
         ];
     });
 
-    return view('ontvanger', compact('packagesInTransit', 'deliveredPackages', 'pendingPackages', 'recentPackages', 'koerierLocations'));
+    return view('ontvanger', compact('packagesInTransit', 'deliveredPackages', 'pendingPackages', 'billedPackages', 'recentPackages', 'koerierLocations'));
 })->middleware('auth')->name('ontvanger');
 
 Route::get('/magazijn', function () {
@@ -144,9 +148,30 @@ Route::get('/magazijn', function () {
     return view('magazijn_medewerker', compact('packagesInStorage', 'packagesInTransit', 'packagesDelivered'));
 })->middleware('auth')->name('magazijn');
 
+Route::get('/backoffice', function () {
+    $user = Auth::user();
+    if (! $user || $user->role !== 'backoffice') {
+        abort(403);
+    }
+
+    $deliveredPackages = Package::where('status', 'delivered')->orderBy('updated_at', 'desc')->get();
+    $billedPackages = Package::where('status', 'billed')->orderBy('updated_at', 'desc')->get();
+
+    return view('backoffice', compact('deliveredPackages', 'billedPackages'));
+})->middleware('auth')->name('backoffice');
+
+Route::post('/backoffice/bill/{id}', [PackageController::class, 'billPackage'])->middleware('auth')->name('backoffice.bill');
+
+Route::post('/ontvanger/pay/{id}', [PackageController::class, 'payPackage'])->middleware('auth')->name('ontvanger.pay');
+
 Route::get('/api/welcome', function () {
     Log::info('Request received: ' . request()->method() . ' ' . request()->path());
     return response()->json(['message' => 'Welcome to SpeedyPacket!']);
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/api/delivered-packages', [PackageController::class, 'getDeliveredPackages']);
+    Route::post('/api/delivered-packages/{id}/bill', [PackageController::class, 'billPackage']);
 });
 
 // Verzender routes
