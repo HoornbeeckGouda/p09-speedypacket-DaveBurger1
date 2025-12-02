@@ -105,6 +105,7 @@ Route::get('/koerier', function () {
 
 Route::post('/koerier/take/{id}', [PackageController::class, 'take'])->middleware('auth')->name('koerier.take');
 Route::post('/koerier/deliver/{id}', [PackageController::class, 'deliver'])->middleware('auth')->name('koerier.deliver');
+Route::get('/koerier/package/{id}', [PackageController::class, 'koerierPackageDetails'])->middleware('auth')->name('koerier.package.details');
 
 Route::post('/magazijn/assign/{id}', [PackageController::class, 'assign'])->middleware('auth')->name('magazijn.assign');
 

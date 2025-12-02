@@ -57,10 +57,19 @@
                                     <td style="padding:12px 16px;border-bottom:1px solid #f1f5f9">{{ $package->recipient_name }}</td>
                                     <td style="padding:12px 16px;border-bottom:1px solid #f1f5f9">{{ $package->recipient_address }}</td>
                                     <td style="padding:12px 16px;border-bottom:1px solid #f1f5f9">
-                                        <form method="POST" action="{{ route('koerier.deliver', $package->id) }}" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" style="background-color:#28a745;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:14px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#218838'" onmouseout="this.style.backgroundColor='#28a745'">Bezorgd</button>
-                                        </form>
+                                        <div style="display: flex; gap: 8px; align-items: center;">
+                                            <a href="{{ route('koerier.package.details', $package->id) }}" style="display:inline-block;">
+                                                <button type="button" style="background-color:#007bff;color:white;border:none;padding:6px;border-radius:6px;cursor:pointer;font-size:14px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#0056b3'" onmouseout="this.style.backgroundColor='#007bff'">
+                                                    <i class="fas fa-search"></i>
+                                                </button>
+                                            </a>
+                                            <form method="POST" action="{{ route('koerier.deliver', $package->id) }}" style="display:inline;">
+                                                @csrf
+                                                <button type="submit" style="background-color:#28a745;color:white;border:none;padding:6px;border-radius:6px;cursor:pointer;font-size:14px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#218838'" onmouseout="this.style.backgroundColor='#28a745'">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

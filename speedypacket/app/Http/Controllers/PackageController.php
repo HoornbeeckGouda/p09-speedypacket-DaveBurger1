@@ -199,4 +199,20 @@ class PackageController extends Controller
 
         return redirect()->route('ontvanger')->with('success', 'Bedankt voor uw betaling! Het pakket is succesvol betaald en verwijderd.');
     }
+
+    public function koerierPackageDetails(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'koerier') {
+            abort(403);
+        }
+
+        $package = Package::with('koerier')->findOrFail($id);
+
+        if ($package->koerier_id !== $user->id) {
+            abort(403, 'U heeft geen toegang tot dit pakket.');
+        }
+
+        return view('koerier-package-details', compact('package'));
+    }
 }
