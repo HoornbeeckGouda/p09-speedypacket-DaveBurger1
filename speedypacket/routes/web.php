@@ -182,6 +182,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/mijn-verzendingen', [PackageController::class, 'index'])->name('mijn-verzendingen');
     Route::post('/pakketten/send/{id}', [PackageController::class, 'send'])->name('pakketten.send');
     Route::get('/pakketten-volgen', [PackageController::class, 'track'])->name('pakketten-volgen');
+    Route::get('/pakket-qr/{id}', [PackageController::class, 'showQr'])->name('pakket.qr');
 });
 
 // Ontvanger routes

@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Log;
 use App\Models\Package;
 use Illuminate\Support\Str;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\SvgWriter;
 
 
 class PackageController extends Controller
@@ -45,6 +47,34 @@ class PackageController extends Controller
 
         $trackingNumber = 'SP' . strtoupper(Str::random(10));
 
+        // Generate QR code
+        $qrCode = new QrCode($trackingNumber);
+        $writer = new SvgWriter();
+        $result = $writer->write($qrCode);
+        $qrCodeData = $result->getString(); // SVG is already a string
+        // Resize SVG to 200x200
+        $qrCodeData = str_replace(['width="320px"', 'height="320px"'], ['width="200px"', 'height="200px"'], $qrCodeData);
+
+        // Assign rayon based on address (simple logic: check for province keywords)
+        $address = strtolower($validated['recipient_address']);
+        $rayon = 'Noord-Holland'; // default
+        if (strpos($address, 'zuid-holland') !== false || strpos($address, 'rotterdam') !== false || strpos($address, 'den haag') !== false) {
+            $rayon = 'Zuid-Holland';
+        } elseif (strpos($address, 'noord-brabant') !== false || strpos($address, 'eindhoven') !== false || strpos($address, 'tilburg') !== false) {
+            $rayon = 'Noord-Brabant';
+        } elseif (strpos($address, 'gelderland') !== false || strpos($address, 'arnhem') !== false || strpos($address, 'nijmegen') !== false) {
+            $rayon = 'Gelderland';
+        }
+
+        // Assign warehouse location based on rayon
+        $warehouseLocations = [
+            'Noord-Holland' => 'Amsterdam Warehouse',
+            'Zuid-Holland' => 'Rotterdam Warehouse',
+            'Noord-Brabant' => 'Eindhoven Warehouse',
+            'Gelderland' => 'Arnhem Warehouse',
+        ];
+        $warehouseLocation = $warehouseLocations[$rayon] ?? 'Amsterdam Warehouse';
+
         Package::create([
             'user_id' => $user->id,
             'recipient_name' => $recipient->name,
@@ -55,6 +85,9 @@ class PackageController extends Controller
             'weight' => $validated['weight'],
             'status' => 'pending',
             'tracking_number' => $trackingNumber,
+            'qr_code' => $qrCodeData,
+            'rayon' => $rayon,
+            'warehouse_location' => $warehouseLocation,
         ]);
 
         return Redirect::route('mijn-verzendingen')->with('success', 'Nieuwe verzending aangemaakt met tracking nummer: ' . $trackingNumber);
@@ -214,5 +247,33 @@ class PackageController extends Controller
         }
 
         return view('koerier-package-details', compact('package'));
+    }
+
+    public function showQr(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'magazijn') {
+            abort(403);
+        }
+
+        $package = Package::findOrFail($id);
+
+        // Allow access to packages in warehouse for scanning/verification
+        if ($package->status !== 'pending') {
+            abort(403, 'Dit pakket is niet in het magazijn.');
+        }
+
+        // Generate QR code if not present
+        if (!$package->qr_code) {
+            $qrCode = new QrCode($package->tracking_number);
+            $writer = new SvgWriter();
+            $result = $writer->write($qrCode);
+            $qrCodeData = $result->getString(); // SVG is already a string
+            // Resize SVG to 200x200
+            $qrCodeData = str_replace(['width="320px"', 'height="320px"'], ['width="200px"', 'height="200px"'], $qrCodeData);
+            $package->update(['qr_code' => $qrCodeData]);
+        }
+
+        return view('pakket-qr', compact('package'));
     }
 }
