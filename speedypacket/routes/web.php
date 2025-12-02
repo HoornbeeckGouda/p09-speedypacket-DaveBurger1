@@ -100,7 +100,64 @@ Route::get('/koerier', function () {
     $pendingPackages = Package::where('status', 'pending')->orderBy('id')->get();
     $startAddress = 'Overslagweg 2, Waddinxveen, Netherlands';
 
-    return view('koerier', compact('packagesToDeliver', 'pendingPackages', 'startAddress'));
+    // Fetch road closures from NDW API using streaming parser for memory efficiency
+    $roadClosures = [];
+    try {
+        $context = stream_context_create(['http' => ['timeout' => 15]]);
+        $gzStream = fopen('https://opendata.ndw.nu/wegwerkzaamheden.xml.gz', 'rb', false, $context);
+
+        if ($gzStream) {
+            // Use gzopen for streaming decompression
+            $xmlReader = new XMLReader();
+            $xmlReader->open('php://temp', null, LIBXML_PARSEHUGE);
+
+            // Read and decompress in chunks
+            $buffer = '';
+            while (!feof($gzStream)) {
+                $chunk = fread($gzStream, 8192);
+                if ($chunk === false) break;
+
+                $decompressed = gzdecode($chunk);
+                if ($decompressed !== false) {
+                    $buffer .= $decompressed;
+
+                    // Process complete XML elements as they become available
+                    while (($endPos = strpos($buffer, '</wegwerkzaamheid>')) !== false) {
+                        $endPos += strlen('</wegwerkzaamheid>');
+                        $xmlChunk = substr($buffer, 0, $endPos);
+                        $buffer = substr($buffer, $endPos);
+
+                        // Parse this chunk
+                        $xml = simplexml_load_string($xmlChunk);
+                        if ($xml && isset($xml->wegwerkzaamheid)) {
+                            foreach ($xml->wegwerkzaamheid as $closure) {
+                                $location = (string)$closure->locatie;
+                                // Filter for closures in or near Waddinxveen or Gouda area
+                                if (stripos($location, 'Waddinxveen') !== false ||
+                                    stripos($location, 'Gouda') !== false ||
+                                    stripos($location, 'A12') !== false) {
+                                    $roadClosures[] = [
+                                        'location' => $location,
+                                        'description' => (string)$closure->beschrijving,
+                                        'start' => (string)$closure->startdatum,
+                                        'end' => (string)$closure->einddatum,
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            fclose($gzStream);
+            $xmlReader->close();
+        }
+    } catch (\Exception $e) {
+        // Log error but continue without road closures
+        Log::warning('Failed to fetch road closures: ' . $e->getMessage());
+    }
+
+    return view('koerier', compact('packagesToDeliver', 'pendingPackages', 'startAddress', 'roadClosures'));
 })->middleware('auth')->name('koerier');
 
 Route::post('/koerier/take/{id}', [PackageController::class, 'take'])->middleware('auth')->name('koerier.take');

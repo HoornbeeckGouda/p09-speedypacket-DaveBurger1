@@ -22,7 +22,7 @@
             <h4 style="margin-bottom: 12px;"><i class="fas fa-route"></i> Route</h4>
             @if($packagesToDeliver->count() > 0)
                 <div style="background: #fff; border: 1px solid #eef2ff; border-radius: 8px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                    <div id="map" style="height: 400px; width: 100%; border-radius: 8px;" data-addresses='@json(collect([$startAddress])->merge($packagesToDeliver->pluck("recipient_address")->toArray()))'></div>
+                    <div id="map" style="height: 400px; width: 100%; border-radius: 8px;" data-addresses='@json(collect([$startAddress])->merge($packagesToDeliver->pluck("recipient_address")->toArray()))' data-road-closures='@json($roadClosures)'></div>
                     <div style="margin-top:16px; padding: 16px; background: #f8fafc; border-radius: 8px;">
                         <h5 style="margin: 0 0 12px; color: #111;">Route Overzicht</h5>
                         <ol style="margin:0; padding-left: 20px; color:var(--muted); font-size: 14px;">

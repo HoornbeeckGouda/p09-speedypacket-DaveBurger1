@@ -135,6 +135,22 @@ window.addEventListener('DOMContentLoaded', function() {
             }
             console.log('Parsed addresses:', addresses);
 
+            // Get road closures from data attribute
+            let roadClosures = [];
+            try {
+                const rawClosures = el.getAttribute('data-road-closures');
+                console.log('Raw data-road-closures attribute:', rawClosures && rawClosures.substring(0, 200));
+                if (rawClosures) {
+                    let cleanedClosures = rawClosures.replace(/"/g, '"').replace(/&amp;/g, '&');
+                    cleanedClosures = cleanedClosures.trim();
+                    roadClosures = JSON.parse(cleanedClosures || '[]');
+                }
+            } catch (err) {
+                console.warn('Failed to parse road closures from data-road-closures, falling back to empty', err);
+                roadClosures = [];
+            }
+            console.log('Parsed road closures:', roadClosures);
+
             // Prepend fixed starting point
             const fixedStart = 'Overslagweg 2, Waddinxveen, Netherlands';
             addresses = [fixedStart, ...addresses];
@@ -193,7 +209,27 @@ window.addEventListener('DOMContentLoaded', function() {
                             console.warn('Routing failed to initialize', e);
                         }
                     }
-                    
+
+                    // Add road closure markers
+                    if (roadClosures.length > 0) {
+                        console.log('Adding road closure markers');
+                        const closureCoords = await Promise.all(roadClosures.map(closure => geocodeAddress(closure.location)));
+                        const validClosureCoords = closureCoords.filter(coord => coord !== null);
+                        validClosureCoords.forEach((coord, index) => {
+                            const closure = roadClosures[index];
+                            const redIcon = new L.Icon({
+                                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                                iconSize: [25, 41],
+                                iconAnchor: [12, 41],
+                                popupAnchor: [1, -34],
+                                shadowSize: [41, 41]
+                            });
+                            const marker = L.marker(coord, { icon: redIcon }).addTo(map);
+                            marker.bindPopup(`<b>Wegafsluiting:</b><br>${closure.location}<br><b>Beschrijving:</b> ${closure.description}<br><b>Start:</b> ${closure.start}<br><b>Eind:</b> ${closure.end}`);
+                        });
+                    }
+
                     // Invalidate size after all content is loaded
                     setTimeout(() => { try { map.invalidateSize(); } catch(e){} }, 300);
                 } else {
