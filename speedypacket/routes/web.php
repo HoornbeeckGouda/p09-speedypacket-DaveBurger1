@@ -32,7 +32,9 @@ Route::post('/login', function (Request $request) {
         /** @var \App\Models\User $user */
         $user = Auth::user();
         if ($user->two_factor_enabled) {
-            $user->generateTwoFactorCode();
+            if (!$user->hasValidTwoFactorCode()) {
+                $user->generateTwoFactorCode();
+            }
             return redirect()->route('verify.twofactor');
         } else {
             $request->session()->regenerate();
@@ -58,6 +60,8 @@ Route::post('/verify-twofactor', function (Request $request) {
     $data = $request->validate([
         'code' => 'required|string',
     ]);
+
+    $data['code'] = trim($data['code']);
 
     /** @var \App\Models\User $user */
     $user = Auth::user();
@@ -268,6 +272,19 @@ Route::get('/backoffice', function () {
 })->middleware('auth')->name('backoffice');
 
 Route::post('/backoffice/bill/{id}', [PackageController::class, 'billPackage'])->middleware('auth')->name('backoffice.bill');
+
+Route::get('/volledig-overzicht', function () {
+    $user = Auth::user();
+    if (! $user || !in_array($user->role, ['backoffice', 'directie'])) {
+        abort(403);
+    }
+
+    $allPackages = Package::with('user', 'koerier')->orderBy('updated_at', 'desc')->get();
+    $deliveredPackages = Package::where('status', 'delivered')->orderBy('updated_at', 'desc')->get();
+    $billedPackages = Package::where('status', 'billed')->orderBy('updated_at', 'desc')->get();
+
+    return view('volledig-overzicht', compact('allPackages', 'deliveredPackages', 'billedPackages'));
+})->middleware('auth')->name('volledig-overzicht');
 
 Route::post('/ontvanger/pay/{id}', [PackageController::class, 'payPackage'])->middleware('auth')->name('ontvanger.pay');
 

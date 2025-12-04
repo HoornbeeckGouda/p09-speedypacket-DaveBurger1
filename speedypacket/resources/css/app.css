@@ -43,7 +43,6 @@
 /* General mobile layout improvements */
 @media (max-width: 640px) {
     .wrap {
-        padding: 0;
         max-width: none;
     }
     .card {
@@ -51,4 +50,33 @@
         border-radius: 0;
         max-width: none !important;
     }
+}
+
+/* Fancy welcome page styles */
+html {
+    height: 100vh;
+}
+
+.welcome-bg {
+    background: linear-gradient(-45deg, #FDFDFC, #fff9f9, #fef2f2, #FDFDFC);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    height: 100vh;
+}
+
+.welcome-bg-dark {
+    background: linear-gradient(-45deg, #0a0a0a, #1a0a0a, #2a0a0a, #0a0a0a);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    height: 100vh;
+}
+
+.welcome-logo {
+    filter: drop-shadow(0 0 20px rgba(245, 48, 3, 0.5));
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }

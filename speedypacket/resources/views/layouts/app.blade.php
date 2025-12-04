@@ -8,7 +8,9 @@
     <style>
         :root{--accent:#0b5fff;--muted:#6b7280;--bg:#f3f4f6}
         *{box-sizing:border-box}
-        body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; padding:0; background:var(--bg); color:#111}
+        html, body{scroll-behavior: smooth; overflow-x: hidden}
+        html{overflow-y: auto}
+        body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; padding:0; background:linear-gradient(to bottom right, #dbeafe, #bfdbfe); color:#111}
         .wrap{width:100%;max-width:1200px;margin:0 auto;padding:34px}
         .card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 8px 24px rgba(15,23,42,0.06);width:100%;box-sizing:border-box}
         header{display:flex;align-items:center;justify-content:space-between}
@@ -18,6 +20,8 @@
         nav a{color:var(--accent);text-decoration:none;margin-left:16px;font-weight:500}
         .btn{display:inline-block;padding:8px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;border:none;cursor:pointer}
         .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(11,95,255,0.12)}
+        .logout-btn{padding:6px 12px;font-size:14px;margin-left:8px;border-radius:6px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);transition:all 0.3s ease}
+        .logout-btn:hover{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.5);color:#fff}
         input[type="text"], input[type="password"], input[type="email"], textarea{width:100%;padding:10px 12px;border:1px solid #e6eef8;border-radius:8px;background:#fbfdff;font-size:15px}
         input:focus, textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 6px 18px rgba(11,95,255,0.08)}
         label{font-size:14px;color:#111;display:block;margin-top:12px}
@@ -53,23 +57,9 @@
 <body>
     <div class="wrap">
         <header>
-            <div>
-                
-            </div>
             <button class="mobile-toggle" aria-expanded="false" aria-label="Open menu">☰</button>
 
             <nav class="desktop-nav">
-                @guest
-                    <a href="{{ route('login') }}">Login</a>
-                @endguest
-                @auth
-                    <a href="{{ url('/') }}">Home</a>
-                    <a href="{{ route('dashboard') }}" style="margin-left:16px">Dashboard</a>
-                    <form method="POST" action="{{ route('logout') }}" style="display:inline">
-                        @csrf
-                        <button class="btn" type="submit" style="margin-left:12px">Uitloggen</button>
-                    </form>
-                @endauth
             </nav>
 
             {{-- Mobile menu (duplicate links for mobile toggle) --}}
@@ -82,7 +72,7 @@
                     <a href="{{ route('dashboard') }}">Dashboard</a>
                     <form method="POST" action="{{ route('logout') }}" style="margin-top:8px">
                         @csrf
-                        <button class="btn" type="submit">Uitloggen</button>
+                        <button class="btn logout-btn" type="submit" data-route="{{ Route::currentRouteName() }}">Uitloggen</button>
                     </form>
                 @endauth
             </div>
