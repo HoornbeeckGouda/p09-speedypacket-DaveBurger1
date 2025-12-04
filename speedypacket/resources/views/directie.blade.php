@@ -39,6 +39,7 @@
                                 <th style="padding:16px;font-weight:600;color:#374151;font-size:14px">Naam</th>
                                 <th style="padding:16px;font-weight:600;color:#374151;font-size:14px">Gebruikersnaam</th>
                                 <th style="padding:16px;font-weight:600;color:#374151;font-size:14px">Rol</th>
+                                <th style="padding:16px;font-weight:600;color:#374151;font-size:14px">Acties</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -47,6 +48,11 @@
                                 <td style="padding:16px;color:#111827">{{ $u->name }}</td>
                                 <td style="padding:16px;color:#111827">{{ $u->username }}</td>
                                 <td style="padding:16px;color:#111827">{{ $u->role }}</td>
+                                <td style="padding:16px;color:#111827">
+                                    <a href="{{ route('directie.user', $u->id) }}" style="background:none;border:none;cursor:pointer;color:#0b5fff;font-size:16px;text-decoration:none;">
+                                        <i class="fas fa-search"></i>
+                                    </a>
+                                </td>
                             </tr>
                         @endforeach
                         </tbody>
@@ -147,6 +153,16 @@
                     this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
                 });
             });
+
+            // Function to show user info
+            window.showUserInfo = function(button) {
+                const id = button.getAttribute('data-user-id');
+                const name = button.getAttribute('data-user-name');
+                const username = button.getAttribute('data-user-username');
+                const email = button.getAttribute('data-user-email');
+                const role = button.getAttribute('data-user-role');
+                alert('Gebruiker Informatie:\n\nID: ' + id + '\nNaam: ' + name + '\nGebruikersnaam: ' + username + '\nEmail: ' + email + '\nRol: ' + role);
+            };
         });
     </script>
 

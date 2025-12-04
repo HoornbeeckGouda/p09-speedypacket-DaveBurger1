@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use App\Models\Package;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return view('main');
@@ -116,6 +117,27 @@ Route::get('/directie', function () {
 
     return view('directie', compact('totalUsers','directieCount','otherCount','recentUsers','totalPackages','pendingPackages','inTransitPackages','deliveredPackages','recentPackages'));
 })->middleware('auth')->name('directie');
+
+Route::get('/directie/user/{id}', function ($id) {
+    $user = Auth::user();
+    if (! $user || $user->role !== 'directie') {
+        abort(403);
+    }
+
+    $viewedUser = User::findOrFail($id);
+
+    return view('directie-user', compact('viewedUser'));
+})->middleware('auth')->name('directie.user');
+
+// User management routes
+Route::middleware('auth')->prefix('directie')->name('directie.')->group(function () {
+    Route::get('/users', [UserController::class, 'index'])->name('users');
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+});
 
 Route::get('/koerier', function () {
     $user = Auth::user();
