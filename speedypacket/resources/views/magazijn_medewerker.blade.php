@@ -49,7 +49,7 @@
                 @if($packagesInStorage->count() > 0)
                     <table style="width:100%;border-collapse:collapse;margin-top:8px">
                         <thead style="text-align:left;color:var(--muted);font-size:13px">
-                            <tr><th style="padding:8px;border-bottom:1px solid #eef2ff">Tracking Nummer</th><th style="padding:8px;border-bottom:1px solid #eef2ff">Ontvanger</th><th style="padding:8px;border-bottom:1px solid #eef2ff">Gewicht</th><th style="padding:8px;border-bottom:1px solid #eef2ff">Aangemaakt</th><th style="padding:8px;border-bottom:1px solid #eef2ff">Acties</th></tr>
+                            <tr><th style="padding:8px;border-bottom:1px solid #eef2ff">Tracking Nummer</th><th style="padding:8px;border-bottom:1px solid #eef2ff">Ontvanger</th><th style="padding:8px;border-bottom:1px solid #eef2ff">Gewicht</th><th style="padding:8px;border-bottom:1px solid #eef2ff">Rayon</th><th style="padding:8px;border-bottom:1px solid #eef2ff">Locatie</th><th style="padding:8px;border-bottom:1px solid #eef2ff">Aangemaakt</th><th style="padding:8px;border-bottom:1px solid #eef2ff">Acties</th></tr>
                         </thead>
                         <tbody>
                         @foreach($packagesInStorage as $index => $package)
@@ -57,6 +57,8 @@
                                 <td style="padding:8px;border-bottom:1px solid #f3f6ff">{{ $package->tracking_number }}</td>
                                 <td style="padding:8px;border-bottom:1px solid #f3f6ff">{{ $package->recipient_name }}</td>
                                 <td style="padding:8px;border-bottom:1px solid #f3f6ff">{{ $package->weight ? $package->weight . ' kg' : 'N/A' }}</td>
+                                <td style="padding:8px;border-bottom:1px solid #f3f6ff">{{ $package->rayon }}</td>
+                                <td style="padding:8px;border-bottom:1px solid #f3f6ff">{{ $package->warehouse_location }}</td>
                                 <td style="padding:8px;border-bottom:1px solid #f3f6ff">{{ $package->created_at->format('d-m-Y H:i') }}</td>
                                 <td style="padding:8px;border-bottom:1px solid #f3f6ff">
                                     <a href="{{ route('pakket.qr', $package->id) }}" class="btn btn-sm" style="background:#0ea5e9;color:white;padding:4px 8px;border-radius:4px;text-decoration:none;font-size:12px;"><i class="fas fa-qrcode"></i> QR</a>
