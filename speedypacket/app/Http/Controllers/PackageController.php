@@ -47,8 +47,9 @@ class PackageController extends Controller
 
         $trackingNumber = 'SP' . strtoupper(Str::random(10));
 
-        // Generate QR code
-        $qrCode = new QrCode($trackingNumber);
+        // Generate QR code with URL
+        $url = url('/track/' . $trackingNumber);
+        $qrCode = new QrCode($url);
         $writer = new SvgWriter();
         $result = $writer->write($qrCode);
         $qrCodeData = $result->getString(); // SVG is already a string
@@ -112,8 +113,12 @@ class PackageController extends Controller
             abort(403);
         }
 
+        $validated = $request->validate([
+            'tracking_number' => 'nullable|string|regex:/^SP[A-Z0-9]{10}$/',
+        ]);
+
         $package = null;
-        $trackingNumber = $request->input('tracking_number');
+        $trackingNumber = $validated['tracking_number'] ?? null;
 
         if ($trackingNumber) {
             $package = Package::with('koerier')->where('tracking_number', $trackingNumber)->first();
@@ -265,7 +270,8 @@ class PackageController extends Controller
 
         // Generate QR code if not present
         if (!$package->qr_code) {
-            $qrCode = new QrCode($package->tracking_number);
+            $url = url('/track/' . $package->tracking_number);
+            $qrCode = new QrCode($url);
             $writer = new SvgWriter();
             $result = $writer->write($qrCode);
             $qrCodeData = $result->getString(); // SVG is already a string
@@ -275,5 +281,17 @@ class PackageController extends Controller
         }
 
         return view('pakket-qr', compact('package'));
+    }
+
+    public function publicTrack($trackingNumber)
+    {
+        // Validate tracking number format
+        if (!preg_match('/^SP[A-Z0-9]{10}$/', $trackingNumber)) {
+            abort(404);
+        }
+
+        $package = Package::with('koerier')->where('tracking_number', $trackingNumber)->first();
+
+        return view('public-track', compact('package'));
     }
 }

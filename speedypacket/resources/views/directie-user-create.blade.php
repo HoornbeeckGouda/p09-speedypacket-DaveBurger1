@@ -52,7 +52,10 @@
                 </select>
             </div>
 
-
+            <div style="margin-bottom:16px">
+                <label for="location" style="display:block;font-weight:600;color:#374151;margin-bottom:4px">Locatie</label>
+                <input type="text" id="location" name="location" value="{{ old('location') }}" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:16px">
+            </div>
 
             <div style="display:flex;gap:12px">
                 <button type="submit" style="flex:1;padding:12px;background:#10b981;color:white;border:none;border-radius:8px;font-weight:500;font-size:16px;cursor:pointer">Gebruiker Aanmaken</button>

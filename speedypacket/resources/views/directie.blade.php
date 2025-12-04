@@ -31,7 +31,10 @@
             </div>
 
             <section>
-                <h4 style="margin-bottom:16px;font-size:20px;font-weight:600">Recente gebruikers</h4>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                    <h4 style="margin:0;font-size:20px;font-weight:600">Recente gebruikers</h4>
+                    <a href="{{ route('directie.users') }}" style="display:inline-block;padding:8px 16px;background:#0b5fff;color:white;text-decoration:none;border-radius:6px;font-weight:500;font-size:14px">Alle gebruikers beheren</a>
+                </div>
                 <div style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1)">
                     <table style="width:100%;border-collapse:collapse">
                         <thead style="background:#f9fafb;text-align:left">

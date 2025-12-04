@@ -67,7 +67,7 @@ Route::post('/verify-twofactor', function (Request $request) {
     }
 
     return back()->withErrors(['code' => 'Ongeldige verificatiecode'])->withInput();
-})->name('verify.twofactor.post')->middleware('auth');
+})->name('verify.twofactor.post')->middleware(['auth', 'throttle:twofactor']);
 
 Route::get('/dashboard', function () {
     $user = Auth::user();
@@ -176,8 +176,8 @@ Route::get('/koerier', function () {
                         $xmlChunk = substr($buffer, 0, $endPos);
                         $buffer = substr($buffer, $endPos);
 
-                        // Parse this chunk
-                        $xml = simplexml_load_string($xmlChunk);
+                        // Parse this chunk with security options
+                        $xml = simplexml_load_string($xmlChunk, null, LIBXML_NOENT | LIBXML_NONET);
                         if ($xml && isset($xml->wegwerkzaamheid)) {
                             foreach ($xml->wegwerkzaamheid as $closure) {
                                 $location = (string)$closure->locatie;
@@ -202,7 +202,7 @@ Route::get('/koerier', function () {
             $xmlReader->close();
         }
     } catch (\Exception $e) {
-        // Log error but continue without road closures
+        // Log error but continue without road closures - don't expose internal errors
         Log::warning('Failed to fetch road closures: ' . $e->getMessage());
     }
 
@@ -275,6 +275,8 @@ Route::get('/api/welcome', function () {
     Log::info('Request received: ' . request()->method() . ' ' . request()->path());
     return response()->json(['message' => 'Welcome to SpeedyPacket!']);
 });
+
+Route::get('/track/{tracking_number}', [PackageController::class, 'publicTrack'])->name('public.track');
 
 Route::middleware('auth')->group(function () {
     Route::get('/api/delivered-packages', [PackageController::class, 'getDeliveredPackages']);

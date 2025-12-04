@@ -53,6 +53,7 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
             'location' => $validated['location'],
+            'two_factor_enabled' => true,
         ]);
 
         return redirect()->route('directie.users')->with('success', 'Gebruiker succesvol aangemaakt.');
