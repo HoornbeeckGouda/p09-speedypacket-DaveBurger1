@@ -32,6 +32,7 @@ class UserFactory extends Factory
             'role' => fake()->randomElement(['verzender','ontvanger','koerier','magazijn','backoffice','directie','customer']),
             'phone' => fake()->phoneNumber(),
             'address' => fake('nl_NL')->address(),
+            'two_factor_enabled' => true,
             'remember_token' => Str::random(10),
         ];
     }

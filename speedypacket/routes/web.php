@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use App\Models\Package;
 use App\Http\Controllers\PackageController;
@@ -27,8 +28,15 @@ Route::post('/login', function (Request $request) {
 
 
     if (Auth::attempt($credentials)) {
-        $request->session()->regenerate();
-        return Redirect::intended('/dashboard');
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if ($user->two_factor_enabled) {
+            $user->generateTwoFactorCode();
+            return redirect()->route('verify.twofactor');
+        } else {
+            $request->session()->regenerate();
+            return Redirect::intended('/dashboard');
+        }
     }
 
     return back()->withErrors(['username' => 'Onjuiste gebruikersnaam of wachtwoord'])->withInput();
@@ -40,6 +48,25 @@ Route::post('/logout', function (Request $request) {
     $request->session()->regenerateToken();
     return redirect('/');
 })->name('logout');
+
+Route::get('/verify-twofactor', function () {
+    return view('auth.verify');
+})->name('verify.twofactor');
+
+Route::post('/verify-twofactor', function (Request $request) {
+    $data = $request->validate([
+        'code' => 'required|string',
+    ]);
+
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
+    if ($user && $user->verifyTwoFactorCode($data['code'])) {
+        $request->session()->regenerate();
+        return Redirect::intended('/dashboard');
+    }
+
+    return back()->withErrors(['code' => 'Ongeldige verificatiecode'])->withInput();
+})->name('verify.twofactor.post')->middleware('auth');
 
 Route::get('/dashboard', function () {
     $user = Auth::user();
