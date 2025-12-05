@@ -400,7 +400,7 @@
                                 <td>
                                     <div style="display: flex; gap: 8px; align-items: center;">
                                         <a href="{{ route('koerier.package.details', $package->id) }}" class="courier-action-btn" style="padding: 8px 16px; font-size: 12px;">
-                                            <i class="fas fa-search"></i>Details
+                                            <i class="fas fa-qrcode"></i>QR Code
                                         </a>
                                         <form method="POST" action="{{ route('koerier.deliver', $package->id) }}" style="display:inline;">
                                             @csrf

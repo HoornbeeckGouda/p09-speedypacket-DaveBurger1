@@ -47,15 +47,6 @@ class PackageController extends Controller
 
         $trackingNumber = 'SP' . strtoupper(Str::random(10));
 
-        // Generate QR code with URL
-        $url = url('/track/' . $trackingNumber);
-        $qrCode = new QrCode($url);
-        $writer = new SvgWriter();
-        $result = $writer->write($qrCode);
-        $qrCodeData = $result->getString(); // SVG is already a string
-        // Resize SVG to 200x200
-        $qrCodeData = str_replace(['width="320px"', 'height="320px"'], ['width="200px"', 'height="200px"'], $qrCodeData);
-
         // Assign rayon based on address (simple logic: check for province keywords)
         $address = strtolower($validated['recipient_address']);
         $rayon = 'Noord-Holland'; // default
@@ -66,6 +57,15 @@ class PackageController extends Controller
         } elseif (strpos($address, 'gelderland') !== false || strpos($address, 'arnhem') !== false || strpos($address, 'nijmegen') !== false) {
             $rayon = 'Gelderland';
         }
+
+        // Generate QR code with recipient data for koerier scanning
+        $qrData = "Ontvanger: {$recipient->name}\nAdres: {$validated['recipient_address']}\nRayon: {$rayon}";
+        $qrCode = new QrCode($qrData);
+        $writer = new SvgWriter();
+        $result = $writer->write($qrCode);
+        $qrCodeData = $result->getString(); // SVG is already a string
+        // Resize SVG to 200x200
+        $qrCodeData = str_replace(['width="320px"', 'height="320px"'], ['width="200px"', 'height="200px"'], $qrCodeData);
 
         // Assign warehouse location based on rayon
         $warehouseLocations = [
@@ -290,21 +290,23 @@ class PackageController extends Controller
     public function showQr(Request $request, $id)
     {
         $user = Auth::user();
-        if (!$user || $user->role !== 'magazijn') {
+        if (!$user || !in_array($user->role, ['magazijn', 'koerier'])) {
             abort(403);
         }
 
         $package = Package::findOrFail($id);
 
-        // Allow access to packages in warehouse for scanning/verification
-        if ($package->status !== 'pending') {
+        // Allow access based on role
+        if ($user->role === 'magazijn' && $package->status !== 'pending') {
             abort(403, 'Dit pakket is niet in het magazijn.');
+        } elseif ($user->role === 'koerier' && ($package->status !== 'in_transit' || $package->koerier_id !== $user->id)) {
+            abort(403, 'U heeft geen toegang tot dit pakket.');
         }
 
-        // Generate QR code if not present
-        if (!$package->qr_code) {
-            $url = url('/track/' . $package->tracking_number);
-            $qrCode = new QrCode($url);
+        // Generate QR code with recipient data if not present or if it's the old URL format
+        if (!$package->qr_code || strpos($package->qr_code, 'Ontvanger:') === false) {
+            $qrData = "Ontvanger: {$package->recipient_name}\nAdres: {$package->recipient_address}\nRayon: {$package->rayon}";
+            $qrCode = new QrCode($qrData);
             $writer = new SvgWriter();
             $result = $writer->write($qrCode);
             $qrCodeData = $result->getString(); // SVG is already a string

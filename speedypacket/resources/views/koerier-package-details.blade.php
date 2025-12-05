@@ -1,16 +1,31 @@
 @extends('layouts.app')
 
-@section('title', 'Pakket Details')
+@section('title', 'Pakket QR Code')
 
 @section('content')
     <div class="card">
-        <h2 style="margin-bottom: 24px;"><i class="fas fa-box"></i> Pakket Details</h2>
+        <h2 style="margin-bottom: 24px;"><i class="fas fa-qrcode"></i> Pakket QR Code</h2>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
             <div>
-                <h3 style="margin-bottom: 16px; color: var(--accent);">Algemene Informatie</h3>
+                <h3 style="margin-bottom: 16px; color: var(--accent);">Pakket Informatie</h3>
                 <div style="margin-bottom: 12px;">
                     <strong>Tracking Nummer:</strong> {{ $package->tracking_number }}
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <strong>Ontvanger:</strong> {{ $package->recipient_name }}
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <strong>Adres:</strong> {{ $package->recipient_address }}
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <strong>Rayon:</strong> {{ $package->rayon }}
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <strong>Magazijn Locatie:</strong> {{ $package->warehouse_location }}
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <strong>Gewicht:</strong> {{ $package->weight ? $package->weight . ' kg' : '-' }}
                 </div>
                 <div style="margin-bottom: 12px;">
                     <strong>Status:</strong>
@@ -40,39 +55,23 @@
                         </span>
                     @endif
                 </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>Gewicht:</strong> {{ $package->weight ? $package->weight . ' kg' : '-' }}
-                </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>Aangemaakt:</strong> {{ $package->created_at->format('d-m-Y H:i') }}
-                </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>Bijgewerkt:</strong> {{ $package->updated_at->format('d-m-Y H:i') }}
-                </div>
             </div>
 
             <div>
-                <h3 style="margin-bottom: 16px; color: var(--accent);">Ontvanger Informatie</h3>
-                <div style="margin-bottom: 12px;">
-                    <strong>Naam:</strong> {{ $package->recipient_name }}
-                </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>Email:</strong> {{ $package->recipient_email }}
-                </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>Telefoon:</strong> {{ $package->recipient_phone ?: '-' }}
-                </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>Adres:</strong> {{ $package->recipient_address }}
-                </div>
+                <h3 style="margin-bottom: 16px; color: var(--accent);">QR Code</h3>
+                @if($package->qr_code)
+                    <div style="text-align: center; padding: 20px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;">
+                        <div style="display: inline-block; max-width: 300px; max-height: 300px;">
+                            {!! $package->qr_code !!}
+                        </div>
+                    </div>
+                @else
+                    <div style="text-align: center; padding: 20px; background: #fef2f2; border-radius: 8px; border: 1px solid #fecaca;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #dc2626; margin-bottom: 16px;"></i>
+                        <p style="color: #dc2626;">QR code niet beschikbaar voor dit pakket.</p>
+                    </div>
+                @endif
             </div>
-        </div>
-
-        <div style="margin-top: 24px;">
-            <h3 style="margin-bottom: 16px; color: var(--accent);">Beschrijving</h3>
-            <p style="background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb;">
-                {{ $package->description ?: 'Geen beschrijving beschikbaar.' }}
-            </p>
         </div>
 
         @if($package->status === 'in_transit')
