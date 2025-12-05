@@ -121,13 +121,19 @@ class PackageController extends Controller
         $trackingNumber = $validated['tracking_number'] ?? null;
 
         if ($trackingNumber) {
-            $package = Package::with('koerier')->where('tracking_number', $trackingNumber)->first();
+            $package = Package::with('koerier', 'user')->where('tracking_number', $trackingNumber)->first();
             if (!$package || $package->user_id !== $user->id) {
                 $package = null;
             }
         }
 
-        return view('pakketten-volgen', compact('package', 'trackingNumber'));
+        // Calculate estimated delivery if package exists
+        $estimatedDelivery = null;
+        if ($package) {
+            $estimatedDelivery = $this->calculateEstimatedDelivery($package);
+        }
+
+        return view('pakketten-volgen', compact('package', 'trackingNumber', 'estimatedDelivery'));
     }
 
     public function ontvangerTrack(Request $request)
@@ -147,7 +153,13 @@ class PackageController extends Controller
             }
         }
 
-        return view('pakketten-volgen', compact('package', 'trackingNumber'));
+        // Calculate estimated delivery if package exists
+        $estimatedDelivery = null;
+        if ($package) {
+            $estimatedDelivery = $this->calculateEstimatedDelivery($package);
+        }
+
+        return view('pakketten-volgen', compact('package', 'trackingNumber', 'estimatedDelivery'));
     }
 
     public function take(Request $request, $id)
@@ -189,6 +201,27 @@ class PackageController extends Controller
         ]);
 
         return redirect()->route('koerier')->with('success', 'Pakket succesvol bezorgd.');
+    }
+
+    public function pickupReturn(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'koerier') {
+            abort(403);
+        }
+
+        $package = Package::findOrFail($id);
+
+        if ($package->status !== 'returned') {
+            return redirect()->route('koerier')->with('error', 'Pakket is niet beschikbaar voor retour ophaling.');
+        }
+
+        $package->update([
+            'status' => 'in_warehouse',
+            'koerier_id' => $user->id
+        ]);
+
+        return redirect()->route('koerier')->with('success', 'Retour pakket succesvol opgehaald en teruggebracht naar het magazijn.');
     }
 
     public function getDeliveredPackages()
@@ -233,9 +266,9 @@ class PackageController extends Controller
             return redirect()->route('ontvanger')->with('error', 'Pakket kan niet worden betaald.');
         }
 
-        $package->delete();
+        $package->update(['status' => 'delivered']);
 
-        return redirect()->route('ontvanger')->with('success', 'Bedankt voor uw betaling! Het pakket is succesvol betaald en verwijderd.');
+        return redirect()->route('ontvanger')->with('success', 'Bedankt voor uw betaling! Het pakket is succesvol bezorgd.');
     }
 
     public function koerierPackageDetails(Request $request, $id)
@@ -293,5 +326,56 @@ class PackageController extends Controller
         $package = Package::with('koerier')->where('tracking_number', $trackingNumber)->first();
 
         return view('public-track', compact('package'));
+    }
+
+    public function initiateReturn(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'ontvanger') {
+            abort(403);
+        }
+
+        $package = Package::findOrFail($id);
+
+        if ($package->recipient_email !== $user->email || !in_array($package->status, ['delivered', 'paid'])) {
+            return redirect()->route('ontvanger')->with('error', 'Pakket kan niet worden geretourneerd.');
+        }
+
+        $package->update(['status' => 'returned']);
+
+        return redirect()->route('ontvanger')->with('success', 'Retour is succesvol geïnitieerd.');
+    }
+
+    public function generateRetourbonPDF($id)
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'ontvanger') {
+            abort(403);
+        }
+
+        $package = Package::findOrFail($id);
+
+        if ($package->recipient_email !== $user->email || $package->status !== 'returned') {
+            abort(403, 'Geen toegang tot deze retourbon.');
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('retourbon', compact('package', 'user'));
+
+        return $pdf->download('retourbon-' . $package->tracking_number . '.pdf');
+    }
+
+    private function calculateEstimatedDelivery($package)
+    {
+        // Simple estimation: 2-5 days from creation, depending on status
+        $created = $package->created_at;
+        $days = 2; // default
+
+        if ($package->status === 'in_transit') {
+            $days = 3;
+        } elseif ($package->status === 'delivered') {
+            return $package->updated_at->format('d-m-Y'); // already delivered
+        }
+
+        return $created->addDays($days)->format('d-m-Y');
     }
 }

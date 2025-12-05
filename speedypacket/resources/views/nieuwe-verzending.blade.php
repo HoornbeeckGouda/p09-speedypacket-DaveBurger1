@@ -3,12 +3,19 @@
 @section('title', 'Nieuwe Verzending Aanmaken')
 
 @section('content')
-    <div class="card">
+    <div class="card max-w-2xl mx-auto">
+        <div class="flex items-center mb-6">
+            <i class="fas fa-shipping-fast text-blue-600 text-2xl mr-3"></i>
+            <h2 class="text-xl font-semibold text-gray-800">Nieuwe Verzending Aanmaken</h2>
+        </div>
 
         @if($errors->any())
-            <div style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 18px; border: 1px solid #fecaca;">
-                <i class="fas fa-exclamation-triangle"></i>
-                <ul style="margin: 8px 0 0; padding-left: 20px;">
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    <span class="font-medium">Er zijn fouten opgetreden:</span>
+                </div>
+                <ul class="mt-2 ml-6 list-disc">
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -16,13 +23,15 @@
             </div>
         @endif
 
-        <form action="{{ route('nieuwe-verzending.store') }}" method="POST" style="display: grid; gap: 18px;">
+        <form action="{{ route('nieuwe-verzending.store') }}" method="POST" class="space-y-6">
             @csrf
 
             <div>
-                <label for="recipient_id" style="display: block; margin-bottom: 6px; font-weight: 600;">Naam Ontvanger *</label>
+                <label for="recipient_id" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-user mr-2"></i>Naam Ontvanger *
+                </label>
                 <select id="recipient_id" name="recipient_id" required
-                        style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Selecteer een ontvanger</option>
                     @foreach($ontvangers as $ontvanger)
                         <option value="{{ $ontvanger->id }}" data-address="{{ $ontvanger->address }}" {{ old('recipient_id') == $ontvanger->id ? 'selected' : '' }}>
@@ -33,33 +42,37 @@
             </div>
 
             <div>
-                <label for="recipient_address" style="display: block; margin-bottom: 6px; font-weight: 600;">Adres Ontvanger *</label>
+                <label for="recipient_address" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-map-marker-alt mr-2"></i>Adres Ontvanger *
+                </label>
                 <textarea id="recipient_address" name="recipient_address" rows="3" required
-                          style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; resize: vertical;">{{ old('recipient_address') }}</textarea>
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 resize-vertical">{{ old('recipient_address') }}</textarea>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label for="weight" style="display: block; margin-bottom: 6px; font-weight: 600;">Gewicht (kg)</label>
+                    <label for="weight" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-weight-hanging mr-2"></i>Gewicht (kg)
+                    </label>
                     <input type="number" id="weight" name="weight" value="{{ old('weight') }}" step="0.01" min="0"
-                           style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                 </div>
-
-                <div></div>
             </div>
 
             <div>
-                <label for="description" style="display: block; margin-bottom: 6px; font-weight: 600;">Beschrijving Pakket</label>
+                <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-sticky-note mr-2"></i>Beschrijving Pakket
+                </label>
                 <textarea id="description" name="description" rows="3"
-                          style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; resize: vertical;">{{ old('description') }}</textarea>
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 resize-vertical">{{ old('description') }}</textarea>
             </div>
 
-            <div style="border-top: 1px solid #e5e7eb; padding-top: 18px; display: flex; gap: 12px; justify-content: flex-end;">
-                <a href="{{ route('dashboard') }}" class="btn secondary">
-                    <i class="fas fa-arrow-left"></i> Annuleren
+            <div class="border-t border-gray-200 pt-6 flex flex-col sm:flex-row gap-3 justify-end">
+                <a href="{{ route('dashboard') }}" class="btn secondary inline-flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Annuleren
                 </a>
-                <button type="submit" class="btn">
-                    <i class="fas fa-save"></i> Verzending Aanmaken
+                <button type="submit" class="btn inline-flex items-center">
+                    <i class="fas fa-save mr-2"></i> Verzending Aanmaken
                 </button>
             </div>
         </form>

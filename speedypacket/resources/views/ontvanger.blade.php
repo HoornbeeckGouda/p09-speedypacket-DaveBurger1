@@ -317,7 +317,7 @@
         </div>
         <div class="receiver-stats-card delivered">
             <i class="fas fa-check-circle"></i>
-            <h3>{{ $packagesInTransit->where('status', 'delivered')->count() }}</h3>
+            <h3>{{ $deliveredPackages->count() }}</h3>
             <p>Ontvangen Pakketten</p>
             <div class="mini-chart"></div>
         </div>
@@ -436,7 +436,107 @@
                     <h5 style="color: #64748b; margin: 0 0 8px; font-size: 18px;">Geen Uitstaande Betalingen</h5>
                     <p style="color: #94a3b8; margin: 0; font-size: 16px;">Alle gefactureerde pakketten zijn betaald.</p>
                 </div>
-            @endif>
+            @endif
+        </div>
+
+        <!-- Delivered Packages Section for Returns -->
+        <div class="receiver-section">
+            <h4 style="margin-bottom: 24px; font-size: 24px; font-weight: 700; color: #1e293b;">
+                <i class="fas fa-box-open" style="margin-right: 12px; color: #10b981;"></i>Ontvangen Pakketten (Retour Mogelijk)
+            </h4>
+            @if($deliveredPackages->count() > 0)
+                <div class="receiver-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag" style="margin-right: 8px;"></i>Tracking Nummer</th>
+                                <th><i class="fas fa-user" style="margin-right: 8px;"></i>Verzender</th>
+                                <th><i class="fas fa-weight-hanging" style="margin-right: 8px;"></i>Gewicht</th>
+                                <th><i class="fas fa-calendar-alt" style="margin-right: 8px;"></i>Ontvangen Op</th>
+                                <th><i class="fas fa-undo" style="margin-right: 8px;"></i>Retour</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($deliveredPackages as $package)
+                            <tr>
+                                <td>
+                                    <code style="background: #dbeafe; padding: 4px 8px; border-radius: 4px; font-size: 14px; font-family: 'Courier New', monospace; color: #1e40af;">
+                                        {{ $package->tracking_number }}
+                                    </code>
+                                </td>
+                                <td>{{ $package->user->name ?? 'Onbekend' }}</td>
+                                <td>{{ $package->weight ? $package->weight . ' kg' : 'N/A' }}</td>
+                                <td>{{ $package->updated_at->format('d-m-Y H:i') }}</td>
+                                <td>
+                                    <form method="POST" action="{{ route('ontvanger.initiate-return', $package->id) }}" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="receiver-action-btn" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                                            <i class="fas fa-undo"></i> Retourneren
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 40px; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.08);">
+                    <i class="fas fa-box-open" style="font-size: 64px; color: #cbd5e1; margin-bottom: 24px;"></i>
+                    <h5 style="color: #64748b; margin: 0 0 8px; font-size: 18px;">Geen Ontvangen Pakketten</h5>
+                    <p style="color: #94a3b8; margin: 0; font-size: 16px;">Er zijn geen pakketten om te retourneren.</p>
+                </div>
+            @endif
+        </div>
+
+        <!-- Returned Packages Section -->
+        <div class="receiver-section">
+            <h4 style="margin-bottom: 24px; font-size: 24px; font-weight: 700; color: #1e293b;">
+                <i class="fas fa-undo-alt" style="margin-right: 12px; color: #8b5cf6;"></i>Geretourneerde Pakketten
+            </h4>
+            @php
+                $returnedPackages = \App\Models\Package::where('recipient_email', auth()->user()->email)->where('status', 'returned')->get();
+            @endphp
+            @if($returnedPackages->count() > 0)
+                <div class="receiver-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag" style="margin-right: 8px;"></i>Tracking Nummer</th>
+                                <th><i class="fas fa-user" style="margin-right: 8px;"></i>Verzender</th>
+                                <th><i class="fas fa-weight-hanging" style="margin-right: 8px;"></i>Gewicht</th>
+                                <th><i class="fas fa-calendar-alt" style="margin-right: 8px;"></i>Geretourneerd Op</th>
+                                <th><i class="fas fa-download" style="margin-right: 8px;"></i>Retourbon</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($returnedPackages as $package)
+                            <tr>
+                                <td>
+                                    <code style="background: #dbeafe; padding: 4px 8px; border-radius: 4px; font-size: 14px; font-family: 'Courier New', monospace; color: #1e40af;">
+                                        {{ $package->tracking_number }}
+                                    </code>
+                                </td>
+                                <td>{{ $package->user->name ?? 'Onbekend' }}</td>
+                                <td>{{ $package->weight ? $package->weight . ' kg' : 'N/A' }}</td>
+                                <td>{{ $package->updated_at->format('d-m-Y H:i') }}</td>
+                                <td>
+                                    <a href="{{ route('ontvanger.retourbon', $package->id) }}" class="receiver-action-btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);" target="_blank">
+                                        <i class="fas fa-download"></i> Download PDF
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 40px; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.08);">
+                    <i class="fas fa-undo-alt" style="font-size: 64px; color: #cbd5e1; margin-bottom: 24px;"></i>
+                    <h5 style="color: #64748b; margin: 0 0 8px; font-size: 18px;">Geen Geretourneerde Pakketten</h5>
+                    <p style="color: #94a3b8; margin: 0; font-size: 16px;">Er zijn geen geretourneerde pakketten.</p>
+                </div>
+            @endif
         </div>
     </div>
 </div>

@@ -13,15 +13,16 @@
         body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; padding:0; background:linear-gradient(to bottom right, #dbeafe, #bfdbfe); color:#111}
         .wrap{width:100%;max-width:1200px;margin:0 auto;padding:34px}
         .card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 8px 24px rgba(15,23,42,0.06);width:100%;box-sizing:border-box}
-        header{display:flex;align-items:center;justify-content:space-between}
+        header{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:12px;padding:12px 24px;margin-bottom:18px;box-shadow:0 4px 16px rgba(0,0,0,0.08)}
+        .desktop-logout{display:flex;align-items:center}
         .brand h1{margin:0;font-size:20px}
         .brand p{margin:2px 0 0;font-size:13px;color:var(--muted)}
         nav{display:flex;align-items:center}
         nav a{color:var(--accent);text-decoration:none;margin-left:16px;font-weight:500}
         .btn{display:inline-block;padding:8px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;border:none;cursor:pointer}
         .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(11,95,255,0.12)}
-        .logout-btn{padding:6px 12px;font-size:14px;margin-left:8px;border-radius:6px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);transition:all 0.3s ease}
-        .logout-btn:hover{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.5);color:#fff}
+        .logout-btn{padding:6px 12px;font-size:14px;margin-left:8px;border-radius:6px;background:#fff;color:#0b5fff;border:1px solid #0b5fff;transition:all 0.3s ease}
+        .logout-btn:hover{background:#0b5fff;color:#fff}
         input[type="text"], input[type="password"], input[type="email"], textarea{width:100%;padding:10px 12px;border:1px solid #e6eef8;border-radius:8px;background:#fbfdff;font-size:15px}
         input:focus, textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 6px 18px rgba(11,95,255,0.08)}
         label{font-size:14px;color:#111;display:block;margin-top:12px}
@@ -36,6 +37,47 @@
         .mobile-menu{display:none;background:#fff;border-radius:8px;padding:12px;box-shadow:0 8px 24px rgba(15,23,42,0.06);margin-top:6px}
         .mobile-menu a{display:block;color:var(--accent);text-decoration:none;margin:8px 0;font-weight:600}
         .mobile-menu .btn{display:block;width:100%;text-align:center}
+
+        .progress-bar-container { position: relative; margin-bottom: 24px; }
+        .progress-bar { width: 100%; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; position: relative; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #1d4ed8); border-radius: 4px; transition: width 0.3s ease; }
+        .progress-33 { width: 33%; }
+        .progress-66 { width: 66%; }
+        .progress-100 { width: 100%; }
+        .progress-labels { display: flex; justify-content: space-between; margin-top: 12px; position: relative; }
+        .progress-labels span { font-size: 14px; color: #6b7280; font-weight: 500; position: relative; }
+        .progress-labels span.active { color: #1d4ed8; font-weight: 600; }
+        .progress-labels span.active::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background: #1d4ed8; border-radius: 50%; }
+
+        /* Enhanced form and card styles */
+        .form-enhanced { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .input-enhanced { border: 2px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; font-size: 16px; transition: all 0.3s ease; background: #ffffff; }
+        .input-enhanced:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); outline: none; }
+        .alert-enhanced { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 1px solid #f59e0b; border-radius: 8px; padding: 16px; color: #92400e; }
+        .card-enhanced { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        .btn-enhanced { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 8px; font-weight: 600; text-decoration: none; transition: all 0.3s ease; border: none; cursor: pointer; }
+        .btn-enhanced.secondary { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+        .btn-enhanced.secondary:hover { background: #e2e8f0; transform: translateY(-1px); }
+        .grid-enhanced { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+        .grid-item { background: rgba(255,255,255,0.8); padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .qr-container { display: flex; justify-content: center; align-items: center; padding: 16px; background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .timeline-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: rgba(255,255,255,0.6); border-radius: 8px; border-left: 4px solid #10b981; }
+        .timeline-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+        .timeline-content { flex: 1; }
+        .timeline-icon { margin-top: 4px; color: #6b7280; }
+        .package-details-card { position: relative; }
+        .card-decoration { position: absolute; border-radius: 50%; opacity: 0.1; }
+        .decoration-1 { width: 100px; height: 100px; background: #3b82f6; top: -20px; right: -20px; }
+        .decoration-2 { width: 80px; height: 80px; background: #06b6d4; bottom: -15px; left: -15px; }
+        .decoration-3 { width: 60px; height: 60px; background: #8b5cf6; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+        /* Floating particles animation */
+        .floating-particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+        .particle { position: absolute; border-radius: 50%; animation: float 6s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
 
         @media (max-width: 640px) {
             main{margin-top:0}
@@ -60,6 +102,10 @@
             <button class="mobile-toggle" aria-expanded="false" aria-label="Open menu">☰</button>
 
             <nav class="desktop-nav">
+                @auth
+                    <a href="{{ url('/') }}">Home</a>
+                    <a href="{{ route('dashboard') }}">Dashboard</a>
+                @endauth
             </nav>
 
             {{-- Mobile menu (duplicate links for mobile toggle) --}}
@@ -76,18 +122,30 @@
                     </form>
                 @endauth
             </div>
+
+            {{-- Desktop logout button --}}
+            @auth
+                <div class="desktop-logout">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button class="logout-btn" type="submit" data-route="{{ Route::currentRouteName() }}">
+                            <i class="fas fa-sign-out-alt"></i> Uitloggen
+                        </button>
+                    </form>
+                </div>
+            @endauth
         </header>
 
         <main>
-            @if(session('success'))
-                <div class="alert success">{{ session('success') }}</div>
-            @endif
             @if(session('error'))
                 <div class="alert error">{{ session('error') }}</div>
             @endif
             @yield('content')
         </main>
     </div>
+
+
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <script>

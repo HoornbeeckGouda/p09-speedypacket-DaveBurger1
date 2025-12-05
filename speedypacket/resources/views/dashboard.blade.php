@@ -3,254 +3,281 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    <style>
-        .dashboard-icon {
-            font-size: 1.5em;
-            color: var(--accent);
-            margin-right: 10px;
-            background: rgba(11, 95, 255, 0.1);
-            padding: 8px;
-            border-radius: 50%;
-            display: inline-block;
+<style>
+    .verzender-hero {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8, #1e40af);
+        color: #fff;
+        border-radius: 20px;
+        padding: 40px;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    .verzender-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+        animation: verzender-float 8s ease-in-out infinite;
+    }
+    @keyframes verzender-float {
+        0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+        50% { transform: translate(-50%, -50%) rotate(180deg); }
+    }
+    .verzender-hero h2 {
+        margin: 0;
+        font-size: 36px;
+        font-weight: 800;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .verzender-hero p {
+        margin: 16px 0 0;
+        opacity: 0.9;
+        font-size: 20px;
+        position: relative;
+        z-index: 1;
+        font-weight: 400;
+    }
+    .verzender-stats-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 32px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        border-left: 4px solid;
+    }
+    .verzender-stats-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    }
+    .verzender-stats-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 64px rgba(0,0,0,0.15);
+    }
+    .verzender-stats-card.total { border-left-color: #2563eb; }
+    .verzender-stats-card.pending { border-left-color: #f59e0b; }
+    .verzender-stats-card.delivered { border-left-color: #10b981; }
+    .verzender-stats-card i {
+        font-size: 40px;
+        margin-bottom: 16px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .verzender-stats-card h3 {
+        margin: 0;
+        font-size: 42px;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 12px;
+    }
+    .verzender-stats-card p {
+        margin: 0;
+        color: #64748b;
+        font-size: 18px;
+        font-weight: 600;
+    }
+    .mini-chart {
+        width: 100%;
+        height: 60px;
+        margin-top: 16px;
+        background: linear-gradient(90deg, rgba(37,99,235,0.1), rgba(29,78,216,0.1));
+        border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+    .mini-chart::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: linear-gradient(90deg, #2563eb, #1d4ed8);
+        border-radius: 8px;
+        animation: chart-fill 2s ease-out;
+    }
+    @keyframes chart-fill {
+        0% { width: 0%; }
+        100% { width: 75%; }
+    }
+    .verzender-section {
+        background: #fff;
+        border-radius: 20px;
+        padding: 32px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        margin-bottom: 32px;
+        animation: fadeInUp 0.5s ease-out;
+    }
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
         }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .verzender-action-btn {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        padding: 16px 32px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(37,99,235,0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 600;
+        font-size: 18px;
+        border: none;
+        cursor: pointer;
+    }
+    .verzender-action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(37,99,235,0.4);
+        text-decoration: none;
+        color: #fff;
+    }
+    .verzender-action-btn i {
+        margin-right: 8px;
+        font-size: 18px;
+    }
+    .alert-enhanced {
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 24px;
+        border: 1px solid;
+        position: relative;
+        overflow: hidden;
+        animation: slideIn 0.3s ease-out;
+    }
+    .alert-enhanced::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+    }
+    .alert-success {
+        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+        color: #166534;
+        border-color: #bbf7d0;
+    }
+    .alert-success::before { background: #16a34a; }
+    .alert-error {
+        background: linear-gradient(135deg, #fef2f2, #fee2e2);
+        color: #991b1b;
+        border-color: #fecaca;
+    }
+    .alert-error::before { background: #dc2626; }
+    .alert-enhanced i {
+        margin-right: 8px;
+        font-size: 18px;
+    }
+    @keyframes slideIn {
+        0% { transform: translateX(-100%); opacity: 0; }
+        100% { transform: translateX(0); opacity: 1; }
+    }
+    @media (max-width: 768px) {
         .verzender-hero {
-            background: linear-gradient(135deg, #dc2626, #b91c1c, #991b1b);
-            color: #fff;
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 32px;
-            position: relative;
-            overflow: hidden;
-        }
-        .verzender-hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: float 6s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
-            50% { transform: translate(-50%, -50%) rotate(180deg); }
+            padding: 24px;
+            margin-bottom: 24px;
         }
         .verzender-hero h2 {
-            margin: 0;
-            font-size: 32px;
-            font-weight: 700;
-            position: relative;
-            z-index: 1;
+            font-size: 28px;
         }
         .verzender-hero p {
-            margin: 12px 0 0;
-            opacity: 0.95;
-            font-size: 18px;
-            position: relative;
-            z-index: 1;
+            font-size: 16px;
         }
-        .stats-card {
-            background: #fff;
-            border: 1px solid #e6eef8;
-            border-radius: 16px;
+        .verzender-stats-card {
             padding: 24px;
-            text-align: center;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
-        .stats-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--accent), #06b6d4);
-        }
-        .stats-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-        }
-        .stats-card i {
+        .verzender-stats-card h3 {
             font-size: 32px;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, var(--accent), #06b6d4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
-        .stats-card h3 {
-            margin: 0;
-            font-size: 36px;
-            font-weight: 700;
-            color: #111;
-            margin-bottom: 8px;
+        .verzender-section {
+            padding: 20px;
         }
-        .stats-card p {
-            margin: 0;
-            color: var(--muted);
-            font-size: 16px;
-            font-weight: 500;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e6eef8;
-            border-radius: 4px;
-            margin-top: 12px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), #06b6d4);
-            border-radius: 4px;
-            transition: width 1s ease;
-        }
-        .action-btn {
-            display: inline-flex;
-            align-items: center;
-            text-decoration: none;
-            padding: 14px 20px;
-            background: linear-gradient(135deg, var(--accent), #06b6d4);
-            color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(11,95,255,0.3);
-            transition: all 0.3s ease;
-            font-weight: 600;
-            font-size: 16px;
-        }
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(11,95,255,0.4);
-            text-decoration: none;
-            color: #fff;
-        }
-        .action-btn i {
-            margin-right: 8px;
-            font-size: 18px;
-        }
-        .action-btn.secondary {
-            background: linear-gradient(135deg, #6b7280, #9ca3af);
-            box-shadow: 0 4px 16px rgba(107,114,128,0.3);
-        }
-        .action-btn.secondary:hover {
-            box-shadow: 0 8px 24px rgba(107,114,128,0.4);
-        }
-        .pending-icon {
-            background: linear-gradient(135deg, #f59e0b, #d97706) !important;
-            -webkit-background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-            background-clip: text !important;
-        }
-        .delivered-icon {
-            background: linear-gradient(135deg, #10b981, #059669) !important;
-            -webkit-background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-            background-clip: text !important;
-        }
-        .total-fill {
-            width: 100% !important;
-        }
-        .pending-fill {
-            background: linear-gradient(90deg, #f59e0b, #d97706) !important;
-        }
-        .delivered-fill {
-            background: linear-gradient(90deg, #10b981, #059669) !important;
-        }
-    </style>
-    <div class="card">
-        <!-- Hero Section -->
-        <div class="verzender-hero" style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h2><i class="fas fa-paper-plane"></i> Welkom terug, {{ auth()->user()->name }}!</h2>
-                <p>Beheer uw verzendingen eenvoudig en efficiënt als verzender.</p>
-            </div>
-            <div style="position: relative; z-index: 2;">
-                <form method="POST" action="{{ route('logout') }}" style="display:inline;">
-                    @csrf
-                    <button class="btn logout-btn" type="submit" data-route="dashboard" style="margin: 0;">Uitloggen</button>
-                </form>
-            </div>
-        </div>
+    }
+</style>
 
-        <!-- Stats Cards -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 32px;">
-            <div class="stats-card">
-                <i class="fas fa-box"></i>
-                <h3>{{ $totalPackages }}</h3>
-                <p>Totaal Verzendingen</p>
-                <div class="progress-bar">
-                    <div class="progress-fill total-fill"></div>
-                </div>
-            </div>
-            <div class="stats-card">
-                <i class="fas fa-clock pending-icon"></i>
-                <h3>{{ $pendingPackages }}</h3>
-                <p>In Behandeling</p>
-                <div class="progress-bar">
-                    <div class="progress-fill pending-fill" data-width="{{ $totalPackages > 0 ? round(($pendingPackages / $totalPackages) * 100) : 0 }}"></div>
-                </div>
-            </div>
-            <div class="stats-card">
-                <i class="fas fa-check-circle delivered-icon"></i>
-                <h3>{{ $deliveredPackages }}</h3>
-                <p>Bezorgd</p>
-                <div class="progress-bar">
-                    <div class="progress-fill delivered-fill" data-width="{{ $totalPackages > 0 ? round(($deliveredPackages / $totalPackages) * 100) : 0 }}"></div>
-                </div>
-            </div>
-        </div>
+<!-- Enhanced Alert Messages -->
+@if(session('success'))
+    <div class="alert-enhanced alert-success">
+        <i class="fas fa-check-circle"></i>
+        <strong>Succes:</strong> {{ session('success') }}
+    </div>
+@endif
 
-        <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;">
-            <div>
-                <!-- Verzender Actions -->
-                <section style="margin-bottom: 24px;">
-                    <h4 style="margin-bottom: 12px;"><i class="fas fa-tasks"></i> Verzender Acties</h4>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
-                        <a href="{{ route('nieuwe-verzending') }}" class="btn" style="display: flex; align-items: center; text-decoration: none; padding: 12px 16px; background: var(--accent); color: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(11,95,255,0.2);">
-                            <i class="fas fa-plus-circle" style="margin-right: 8px;"></i> Nieuwe Verzending Aanmaken
-                        </a>
-                        <a href="{{ route('mijn-verzendingen') }}" class="btn secondary" style="display: flex; align-items: center; text-decoration: none; padding: 12px 16px;">
-                            <i class="fas fa-list" style="margin-right: 8px;"></i> Mijn Verzendingen Bekijken
-                        </a>
-                        <a href="{{ route('pakketten-volgen') }}" class="btn secondary" style="display: flex; align-items: center; text-decoration: none; padding: 12px 16px;">
-                            <i class="fas fa-search" style="margin-right: 8px;"></i> Pakketten Volgen
-                        </a>
-                    </div>
-                </section>
-                <section>
-                    <ul style="color:var(--muted); list-style: none; padding: 0;">
-                        @if(auth()->user()->role === 'directie')
-                            <li style="margin-bottom: 8px;"><a href="{{ route('directie') }}" style="color: var(--accent); text-decoration: none;"><i class="fas fa-building"></i> Directie Home</a></li>
-                        @endif
-                        @if(auth()->user()->role === 'koerier')
-                            <li style="margin-bottom: 8px;"><a href="{{ route('koerier') }}" style="color: var(--accent); text-decoration: none;"><i class="fas fa-truck"></i> Koerier Dashboard</a></li>
-                        @endif
-                        @if(auth()->user()->role === 'ontvanger')
-                            <li style="margin-bottom: 8px;"><a href="{{ route('ontvanger') }}" style="color: var(--accent); text-decoration: none;"><i class="fas fa-inbox"></i> Ontvanger Dashboard</a></li>
-                        @endif
-                        @if(auth()->user()->role === 'magazijn_medewerker')
-                            <li style="margin-bottom: 8px;"><a href="{{ route('magazijn_medewerker') }}" style="color: var(--accent); text-decoration: none;"><i class="fas fa-warehouse"></i> Magazijn Medewerker Dashboard</a></li>
-                        @endif
-                    </ul>
-                </section>
-            </div>
+@if(session('error'))
+    <div class="alert-enhanced alert-error">
+        <i class="fas fa-exclamation-circle"></i>
+        <strong>Fout:</strong> {{ session('error') }}
+    </div>
+@endif
+
+<div class="card" style="margin:0 auto;" id="verzender-page">
+    <!-- Enhanced Verzender Hero Section -->
+    <div class="verzender-hero">
+        <h2><i class="fas fa-paper-plane"></i> Welkom terug, {{ auth()->user()->name }}!</h2>
+        <p>Beheer uw verzendingen eenvoudig en efficiënt als verzender.</p>
+    </div>
+
+    <!-- Enhanced Stats Cards with Mini Charts -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px;">
+        <div class="verzender-stats-card total">
+            <i class="fas fa-box"></i>
+            <h3>{{ $totalPackages }}</h3>
+            <p>Totaal Verzendingen</p>
+            <div class="mini-chart"></div>
+        </div>
+        <div class="verzender-stats-card pending">
+            <i class="fas fa-clock"></i>
+            <h3>{{ $pendingPackages }}</h3>
+            <p>In Behandeling</p>
+            <div class="mini-chart"></div>
+        </div>
+        <div class="verzender-stats-card delivered">
+            <i class="fas fa-check-circle"></i>
+            <h3>{{ $deliveredPackages }}</h3>
+            <p>Bezorgd</p>
+            <div class="mini-chart"></div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate progress bars
-            const progressFills = document.querySelectorAll('.progress-fill[data-width]');
-            progressFills.forEach(fill => {
-                const width = fill.getAttribute('data-width');
-                setTimeout(() => {
-                    fill.style.width = width + '%';
-                }, 500);
-            });
-        });
-    </script>
+    <!-- Enhanced Verzender Actions Section -->
+    <div class="verzender-section">
+        <h4 style="margin-bottom: 24px; font-size: 24px; font-weight: 700; color: #1e293b;">
+            <i class="fas fa-tasks" style="margin-right: 12px; color: #2563eb;"></i>Verzender Acties
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+            <a href="{{ route('nieuwe-verzending') }}" class="verzender-action-btn">
+                <i class="fas fa-plus-circle"></i> Nieuwe Verzending Aanmaken
+            </a>
+            <a href="{{ route('mijn-verzendingen') }}" class="verzender-action-btn">
+                <i class="fas fa-list"></i> Mijn Verzendingen Bekijken
+            </a>
+            <a href="{{ route('pakketten-volgen') }}" class="verzender-action-btn">
+                <i class="fas fa-search"></i> Pakketten Volgen
+            </a>
+        </div>
+    </div>
+</div>
 @endsection

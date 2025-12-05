@@ -151,6 +151,7 @@ Route::get('/koerier', function () {
 
     $packagesToDeliver = Package::where('status', 'in_transit')->orderBy('id')->get();
     $pendingPackages = Package::where('status', 'pending')->orderBy('id')->get();
+    $returnedPackages = Package::where('status', 'returned')->orderBy('id')->get();
     $startAddress = 'Overslagweg 2, Waddinxveen, Netherlands';
 
     // Fetch road closures from NDW API using streaming parser for memory efficiency
@@ -210,11 +211,12 @@ Route::get('/koerier', function () {
         Log::warning('Failed to fetch road closures: ' . $e->getMessage());
     }
 
-    return view('koerier', compact('packagesToDeliver', 'pendingPackages', 'startAddress', 'roadClosures'));
+    return view('koerier', compact('packagesToDeliver', 'pendingPackages', 'returnedPackages', 'startAddress', 'roadClosures'));
 })->middleware('auth')->name('koerier');
 
 Route::post('/koerier/take/{id}', [PackageController::class, 'take'])->middleware('auth')->name('koerier.take');
 Route::post('/koerier/deliver/{id}', [PackageController::class, 'deliver'])->middleware('auth')->name('koerier.deliver');
+Route::post('/koerier/pickup-return/{id}', [PackageController::class, 'pickupReturn'])->middleware('auth')->name('koerier.pickup.return');
 Route::get('/koerier/package/{id}', [PackageController::class, 'koerierPackageDetails'])->middleware('auth')->name('koerier.package.details');
 
 Route::post('/magazijn/assign/{id}', [PackageController::class, 'assign'])->middleware('auth')->name('magazijn.assign');
@@ -226,7 +228,7 @@ Route::get('/ontvanger', function () {
     }
 
     $packagesInTransit = Package::where('status', 'in_transit')->where('recipient_email', $user->email)->get();
-    $deliveredPackages = Package::where('status', 'delivered')->where('recipient_email', $user->email)->count();
+    $deliveredPackages = Package::where('status', 'delivered')->where('recipient_email', $user->email)->get();
     $pendingPackages = Package::where('status', 'pending')->where('recipient_email', $user->email)->count();
     $billedPackages = Package::where('status', 'billed')->where('recipient_email', $user->email)->get();
     $recentPackages = Package::where('recipient_email', $user->email)->orderBy('updated_at', 'desc')->limit(10)->get();
@@ -313,4 +315,6 @@ Route::middleware('auth')->group(function () {
 // Ontvanger routes
 Route::middleware('auth')->group(function () {
     Route::get('/ontvanger-pakketten-volgen', [PackageController::class, 'ontvangerTrack'])->name('ontvanger-pakketten-volgen');
+    Route::post('/ontvanger/initiate-return/{id}', [PackageController::class, 'initiateReturn'])->name('ontvanger.initiate-return');
+    Route::get('/ontvanger/retourbon/{id}', [PackageController::class, 'generateRetourbonPDF'])->name('ontvanger.retourbon');
 });

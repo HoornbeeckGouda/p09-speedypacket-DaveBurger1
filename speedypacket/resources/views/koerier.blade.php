@@ -494,7 +494,55 @@
                     <h5 style="color: #64748b; margin: 0 0 8px; font-size: 18px;">Geen Beschikbare Pakketten</h5>
                     <p style="color: #94a3b8; margin: 0; font-size: 16px;">Alle pakketten zijn al toegewezen aan koeriers.</p>
                 </div>
-            @endif>
+            @endif
+        </div>
+
+        <!-- Returned Packages Section -->
+        <div class="courier-section">
+            <h4 style="margin-bottom: 24px; font-size: 24px; font-weight: 700; color: #1e293b;">
+                <i class="fas fa-undo" style="margin-right: 12px; color: #dc2626;"></i>Retour Pakketten
+            </h4>
+            @if($returnedPackages->count() > 0)
+                <div class="courier-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag" style="margin-right: 8px;"></i>Tracking Nummer</th>
+                                <th><i class="fas fa-user" style="margin-right: 8px;"></i>Ontvanger</th>
+                                <th><i class="fas fa-map-marker-alt" style="margin-right: 8px;"></i>Adres</th>
+                                <th><i class="fas fa-truck" style="margin-right: 8px;"></i>Actie</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($returnedPackages as $package)
+                            <tr>
+                                <td>
+                                    <code style="background: #dbeafe; padding: 4px 8px; border-radius: 4px; font-size: 14px; font-family: 'Courier New', monospace; color: #1e40af;">
+                                        {{ $package->tracking_number }}
+                                    </code>
+                                </td>
+                                <td>{{ $package->recipient_name }}</td>
+                                <td>{{ $package->recipient_address }}</td>
+                                <td>
+                                    <form method="POST" action="{{ route('koerier.pickup.return', $package->id) }}" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="courier-action-btn" style="padding: 8px 16px; font-size: 12px; background: linear-gradient(135deg, #dc2626, #b91c1c);">
+                                            <i class="fas fa-hand-paper"></i>Pickup Return
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 40px; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.08);">
+                    <i class="fas fa-inbox" style="font-size: 64px; color: #cbd5e1; margin-bottom: 24px;"></i>
+                    <h5 style="color: #64748b; margin: 0 0 8px; font-size: 18px;">Geen Retour Pakketten</h5>
+                    <p style="color: #94a3b8; margin: 0; font-size: 16px;">Er zijn momenteel geen retour pakketten om op te halen.</p>
+                </div>
+            @endif
         </div>
     </div>
 @endsection
