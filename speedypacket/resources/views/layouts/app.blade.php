@@ -104,7 +104,6 @@
             <nav class="desktop-nav">
                 @auth
                     <a href="{{ url('/') }}">Home</a>
-                    <a href="{{ route('dashboard') }}">Dashboard</a>
                 @endauth
             </nav>
 

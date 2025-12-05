@@ -249,12 +249,6 @@
             <h2><i class="fas fa-crown"></i> Directie Dashboard</h2>
             <p>Overzicht van systeemprestaties en management inzichten</p>
         </div>
-        <div style="position: relative; z-index: 2;">
-            <form method="POST" action="{{ route('logout') }}" style="display:inline;">
-                @csrf
-                <button class="btn logout-btn" type="submit" data-route="directie" style="margin: 0;">Uitloggen</button>
-            </form>
-        </div>
     </div>
 
     <!-- Management Dashboard Container -->
