@@ -430,7 +430,6 @@
             });
         });
 
-        // Mini chart animations
         document.querySelectorAll('.mini-chart').forEach(chart => {
             chart.addEventListener('mouseenter', function() {
                 this.style.transform = 'scaleY(1.2)';

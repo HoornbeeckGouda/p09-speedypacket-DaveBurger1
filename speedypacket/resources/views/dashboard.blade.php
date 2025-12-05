@@ -240,7 +240,6 @@
         <p>Beheer uw verzendingen eenvoudig en efficiënt als verzender.</p>
     </div>
 
-    <!-- Enhanced Stats Cards with Mini Charts -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px;">
         <div class="verzender-stats-card total">
             <i class="fas fa-box"></i>
@@ -283,7 +282,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Trigger mini chart animations after page load
         setTimeout(() => {
             document.querySelectorAll('.mini-chart').forEach(chart => {
                 chart.classList.add('animate');
