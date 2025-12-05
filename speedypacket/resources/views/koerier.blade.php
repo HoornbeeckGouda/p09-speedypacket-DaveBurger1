@@ -308,12 +308,6 @@
             <h2><i class="fas fa-truck"></i> Welkom terug, {{ auth()->user()->name }}!</h2>
             <p>Beheer uw bezorgingen efficiënt en overzichtelijk.</p>
         </div>
-        <div style="position: relative; z-index: 2;">
-            <form method="POST" action="{{ route('logout') }}" style="display:inline;">
-                @csrf
-                <button class="btn logout-btn" type="submit" data-route="koerier" style="margin: 0;">Uitloggen</button>
-            </form>
-        </div>
     </div>
 
     <!-- Enhanced Stats Cards with Mini Charts -->
