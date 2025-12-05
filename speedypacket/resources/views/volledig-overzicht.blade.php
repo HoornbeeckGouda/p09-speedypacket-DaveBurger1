@@ -71,6 +71,7 @@
     .overview-stats-card.all { border-left-color: #1e293b; }
     .overview-stats-card.delivered { border-left-color: #059669; }
     .overview-stats-card.billed { border-left-color: #d97706; }
+    .overview-stats-card.in_warehouse { border-left-color: #3730a3; }
     .overview-stats-card i {
         font-size: 40px;
         margin-bottom: 16px;
@@ -92,29 +93,7 @@
         font-size: 18px;
         font-weight: 600;
     }
-    .mini-chart {
-        width: 100%;
-        height: 60px;
-        margin-top: 16px;
-        background: linear-gradient(90deg, rgba(30,41,59,0.1), rgba(51,65,85,0.1));
-        border-radius: 8px;
-        position: relative;
-        overflow: hidden;
-    }
-    .mini-chart::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        background: linear-gradient(90deg, #1e293b, #334155);
-        border-radius: 8px;
-        animation: chart-fill 2s ease-out;
-    }
-    @keyframes chart-fill {
-        0% { width: 0%; }
-        100% { width: 75%; }
-    }
+
     .overview-tabs {
         display: flex;
         gap: 4px;
@@ -264,29 +243,51 @@
         <button id="billed-tab" class="overview-tab-button">
             <i class="fas fa-file-invoice-dollar" style="margin-right: 8px;"></i>Gefactureerd
         </button>
+        <button id="returned-tab" class="overview-tab-button">
+            <i class="fas fa-undo-alt" style="margin-right: 8px;"></i>Geretourneerd
+        </button>
     </div>
 
     <!-- All Packages Tab Content -->
     <div id="all-content" class="overview-tab-content">
         <!-- Enhanced Stats Cards -->
+        @php
+            $totalCount = $allPackages->count();
+            $deliveredCount = $deliveredPackages->count();
+            $billedCount = $billedPackages->count();
+            $returnedCount = $returnedPackages->count();
+            $inWarehouseCount = $inWarehousePackages->count();
+
+            $deliveredPercent = $totalCount > 0 ? round(($deliveredCount / $totalCount) * 100) : 0;
+            $billedPercent = $totalCount > 0 ? round(($billedCount / $totalCount) * 100) : 0;
+            $returnedPercent = $totalCount > 0 ? round(($returnedCount / $totalCount) * 100) : 0;
+            $inWarehousePercent = $totalCount > 0 ? round(($inWarehouseCount / $totalCount) * 100) : 0;
+        @endphp
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px;">
             <div class="overview-stats-card all">
                 <i class="fas fa-boxes"></i>
-                <h3>{{ $allPackages->count() }}</h3>
+                <h3>{{ $totalCount }}</h3>
                 <p>Totaal Pakketten</p>
-                <div class="mini-chart"></div>
             </div>
             <div class="overview-stats-card delivered">
                 <i class="fas fa-check-circle"></i>
-                <h3>{{ $deliveredPackages->count() }}</h3>
+                <h3>{{ $deliveredCount }}</h3>
                 <p>Bezorgd</p>
-                <div class="mini-chart"></div>
             </div>
             <div class="overview-stats-card billed">
                 <i class="fas fa-file-invoice-dollar"></i>
-                <h3>{{ $billedPackages->count() }}</h3>
+                <h3>{{ $billedCount }}</h3>
                 <p>Gefactureerd</p>
-                <div class="mini-chart"></div>
+            </div>
+            <div class="overview-stats-card returned" style="border-left-color: #dc2626;">
+                <i class="fas fa-undo-alt"></i>
+                <h3>{{ $returnedCount }}</h3>
+                <p>Geretourneerd</p>
+            </div>
+            <div class="overview-stats-card in_warehouse">
+                <i class="fas fa-warehouse"></i>
+                <h3>{{ $inWarehouseCount }}</h3>
+                <p>In Magazijn</p>
             </div>
         </div>
 
@@ -403,6 +404,39 @@
             </div>
         </section>
     </div>
+
+    <!-- Returned Packages Tab Content -->
+    <div id="returned-content" class="overview-tab-content" style="display: none;">
+        <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h4 style="margin: 0; font-size: 24px; font-weight: 700; color: #1e293b;">
+                    <i class="fas fa-undo-alt" style="margin-right: 12px; color: #dc2626;"></i>Geretourneerde Pakketten
+                </h4>
+            </div>
+            <div class="overview-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag" style="margin-right: 8px;"></i>Tracking Nummer</th>
+                            <th><i class="fas fa-user" style="margin-right: 8px;"></i>Ontvanger</th>
+                            <th><i class="fas fa-weight-hanging" style="margin-right: 8px;"></i>Gewicht</th>
+                            <th><i class="fas fa-calendar-check" style="margin-right: 8px;"></i>Geretourneerd Op</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($returnedPackages as $p)
+                        <tr>
+                            <td><code style="background: #fef2f2; padding: 4px 8px; border-radius: 4px; font-size: 14px; font-family: 'Courier New', monospace; color: #dc2626;">{{ $p->tracking_number }}</code></td>
+                            <td>{{ $p->recipient_name }}</td>
+                            <td>{{ $p->weight ? $p->weight . ' kg' : 'N/A' }}</td>
+                            <td>{{ $p->updated_at->format('d-m-Y H:i') }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
 </div>
 
 <script>
@@ -410,35 +444,46 @@
         const allTab = document.getElementById('all-tab');
         const deliveredTab = document.getElementById('delivered-tab');
         const billedTab = document.getElementById('billed-tab');
+        const returnedTab = document.getElementById('returned-tab');
         const allContent = document.getElementById('all-content');
         const deliveredContent = document.getElementById('delivered-content');
         const billedContent = document.getElementById('billed-content');
+        const returnedContent = document.getElementById('returned-content');
 
-        function switchTab(activeTab, inactiveTab1, inactiveTab2, activeContent, inactiveContent1, inactiveContent2) {
+        function switchTab(activeTab, inactiveTabs, activeContent, inactiveContents) {
+            // Remove active class from all tabs
+            [allTab, deliveredTab, billedTab, returnedTab].forEach(tab => tab.classList.remove('active'));
+            // Add active class to the clicked tab
             activeTab.classList.add('active');
-            inactiveTab1.classList.remove('active');
-            inactiveTab2.classList.remove('active');
 
+            // Hide all contents
+            [allContent, deliveredContent, billedContent, returnedContent].forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // Show active content with animation
             activeContent.style.opacity = '0';
             activeContent.style.display = 'block';
 
             setTimeout(() => {
                 activeContent.style.opacity = '1';
-                inactiveContent1.style.display = 'none';
-                inactiveContent2.style.display = 'none';
             }, 50);
         }
 
         allTab.addEventListener('click', function() {
-            switchTab(allTab, deliveredTab, billedTab, allContent, deliveredContent, billedContent);
+            switchTab(allTab, [deliveredTab, billedTab, returnedTab], allContent, [deliveredContent, billedContent, returnedContent]);
         });
 
         deliveredTab.addEventListener('click', function() {
-            switchTab(deliveredTab, allTab, billedTab, deliveredContent, allContent, billedContent);
+            switchTab(deliveredTab, [allTab, billedTab, returnedTab], deliveredContent, [allContent, billedContent, returnedContent]);
         });
 
         billedTab.addEventListener('click', function() {
-            switchTab(billedTab, allTab, deliveredTab, billedContent, allContent, deliveredContent);
+            switchTab(billedTab, [allTab, deliveredTab, returnedTab], billedContent, [allContent, deliveredContent, returnedContent]);
+        });
+
+        returnedTab.addEventListener('click', function() {
+            switchTab(returnedTab, [allTab, deliveredTab, billedTab], returnedContent, [allContent, deliveredContent, billedContent]);
         });
 
         // Hover effects for stats cards
@@ -450,17 +495,6 @@
             card.addEventListener('mouseleave', function() {
                 this.style.transform = 'translateY(0) scale(1)';
                 this.style.boxShadow = '0 8px 32px rgba(0,0,0,0.08)';
-            });
-        });
-
-        // Mini chart animations
-        document.querySelectorAll('.mini-chart').forEach(chart => {
-            chart.addEventListener('mouseenter', function() {
-                this.style.transform = 'scaleY(1.2)';
-                this.style.transition = 'transform 0.3s ease';
-            });
-            chart.addEventListener('mouseleave', function() {
-                this.style.transform = 'scaleY(1)';
             });
         });
 

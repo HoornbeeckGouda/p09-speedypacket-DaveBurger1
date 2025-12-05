@@ -92,29 +92,7 @@
             font-size: 18px;
             font-weight: 600;
         }
-        .mini-chart {
-            width: 100%;
-            height: 60px;
-            margin-top: 16px;
-            background: linear-gradient(90deg, rgba(15,23,42,0.1), rgba(30,41,59,0.1));
-            border-radius: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-        .mini-chart::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: linear-gradient(90deg, #0f172a, #1e293b);
-            border-radius: 8px;
-            animation: chart-fill 2s ease-out;
-        }
-        @keyframes chart-fill {
-            0% { width: 0%; }
-            100% { width: 75%; }
-        }
+
         .warehouse-section {
             background: #fff;
             border-radius: 20px;
@@ -339,19 +317,16 @@
                 <i class="fas fa-box"></i>
                 <h3>{{ $packagesInStorage->count() }}</h3>
                 <p>In Magazijn</p>
-                <div class="mini-chart"></div>
             </div>
             <div class="warehouse-stats-card transit">
                 <i class="fas fa-truck"></i>
                 <h3>{{ $packagesInTransit->count() }}</h3>
                 <p>In Transit</p>
-                <div class="mini-chart"></div>
             </div>
             <div class="warehouse-stats-card delivered">
                 <i class="fas fa-check-circle"></i>
                 <h3>{{ $packagesDelivered->count() }}</h3>
                 <p>Bezorgd</p>
-                <div class="mini-chart"></div>
             </div>
         </div>
 
@@ -524,4 +499,6 @@
             </div>
         </div>
     </div>
+
+
 @endsection

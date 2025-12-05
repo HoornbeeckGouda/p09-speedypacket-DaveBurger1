@@ -284,8 +284,10 @@ Route::get('/volledig-overzicht', function () {
     $allPackages = Package::with('user', 'koerier')->orderBy('updated_at', 'desc')->get();
     $deliveredPackages = Package::where('status', 'delivered')->orderBy('updated_at', 'desc')->get();
     $billedPackages = Package::where('status', 'billed')->orderBy('updated_at', 'desc')->get();
+    $returnedPackages = Package::where('status', 'returned')->orderBy('updated_at', 'desc')->get();
+    $inWarehousePackages = Package::where('status', 'in_warehouse')->orderBy('updated_at', 'desc')->get();
 
-    return view('volledig-overzicht', compact('allPackages', 'deliveredPackages', 'billedPackages'));
+    return view('volledig-overzicht', compact('allPackages', 'deliveredPackages', 'billedPackages', 'returnedPackages', 'inWarehousePackages'));
 })->middleware('auth')->name('volledig-overzicht');
 
 Route::post('/ontvanger/pay/{id}', [PackageController::class, 'payPackage'])->middleware('auth')->name('ontvanger.pay');

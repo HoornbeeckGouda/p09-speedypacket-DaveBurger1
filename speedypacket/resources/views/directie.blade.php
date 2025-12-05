@@ -93,29 +93,7 @@
             font-size: 18px;
             font-weight: 600;
         }
-        .mini-chart {
-            width: 100%;
-            height: 60px;
-            margin-top: 16px;
-            background: linear-gradient(90deg, rgba(30,41,59,0.1), rgba(51,65,85,0.1));
-            border-radius: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-        .mini-chart::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: linear-gradient(90deg, #1e293b, #334155);
-            border-radius: 8px;
-            animation: chart-fill 2s ease-out;
-        }
-        @keyframes chart-fill {
-            0% { width: 0%; }
-            100% { width: 75%; }
-        }
+
         .management-tabs {
             display: flex;
             gap: 4px;
@@ -272,7 +250,6 @@
                     <i class="fas fa-users"></i>
                     <h3>{{ $totalUsers }}</h3>
                     <p>Totaal Gebruikers</p>
-                    <div class="mini-chart"></div>
                 </div>
                 <div class="management-stats-card users">
                     <i class="fas fa-crown"></i>
@@ -284,7 +261,6 @@
                     <i class="fas fa-user-friends"></i>
                     <h3>{{ $otherCount }}</h3>
                     <p>Overige Accounts</p>
-                    <div class="mini-chart"></div>
                 </div>
             </div>
 
@@ -340,25 +316,21 @@
                     <i class="fas fa-boxes"></i>
                     <h3>{{ $totalPackages }}</h3>
                     <p>Totaal Pakketten</p>
-                    <div class="mini-chart"></div>
                 </div>
                 <div class="management-stats-card packages">
                     <i class="fas fa-clock"></i>
                     <h3>{{ $pendingPackages }}</h3>
                     <p>In Afwachting</p>
-                    <div class="mini-chart"></div>
                 </div>
                 <div class="management-stats-card packages">
                     <i class="fas fa-truck"></i>
                     <h3>{{ $inTransitPackages }}</h3>
                     <p>Onderweg</p>
-                    <div class="mini-chart"></div>
                 </div>
                 <div class="management-stats-card packages">
                     <i class="fas fa-check-circle"></i>
                     <h3>{{ $deliveredPackages }}</h3>
                     <p>Bezorgd</p>
-                    <div class="mini-chart"></div>
                 </div>
             </div>
 
@@ -543,6 +515,13 @@
                 @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
             `;
             document.head.appendChild(style);
+
+            // Trigger mini chart animations after page load
+            setTimeout(() => {
+                document.querySelectorAll('.mini-chart').forEach(chart => {
+                    chart.classList.add('animate');
+                });
+            }, 100);
         });
     </script>
 

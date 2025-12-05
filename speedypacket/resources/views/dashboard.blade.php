@@ -280,4 +280,15 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Trigger mini chart animations after page load
+        setTimeout(() => {
+            document.querySelectorAll('.mini-chart').forEach(chart => {
+                chart.classList.add('animate');
+            });
+        }, 100);
+    });
+</script>
 @endsection

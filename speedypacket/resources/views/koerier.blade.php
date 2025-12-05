@@ -91,29 +91,7 @@
         font-size: 18px;
         font-weight: 600;
     }
-    .mini-chart {
-        width: 100%;
-        height: 60px;
-        margin-top: 16px;
-        background: linear-gradient(90deg, rgba(22,163,74,0.1), rgba(21,128,61,0.1));
-        border-radius: 8px;
-        position: relative;
-        overflow: hidden;
-    }
-    .mini-chart::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        background: linear-gradient(90deg, #16a34a, #15803d);
-        border-radius: 8px;
-        animation: chart-fill 2s ease-out;
-    }
-    @keyframes chart-fill {
-        0% { width: 0%; }
-        100% { width: 75%; }
-    }
+
     .courier-section {
         background: #fff;
         border-radius: 20px;
@@ -344,19 +322,16 @@
             <i class="fas fa-box"></i>
             <h3>{{ $packagesToDeliver->count() }}</h3>
             <p>Pakketten om te Bezorgen</p>
-            <div class="mini-chart"></div>
         </div>
         <div class="courier-stats-card available">
             <i class="fas fa-hand-paper"></i>
             <h3>{{ $pendingPackages->count() }}</h3>
             <p>Beschikbare Pakketten</p>
-            <div class="mini-chart"></div>
         </div>
         <div class="courier-stats-card efficiency">
             <i class="fas fa-tachometer-alt"></i>
             <h3>{{ $packagesToDeliver->count() > 0 ? round(($packagesToDeliver->where('status', 'delivered')->count() / $packagesToDeliver->count()) * 100) : 0 }}%</h3>
             <p>Bezorg Efficiëntie</p>
-            <div class="mini-chart"></div>
         </div>
     </div>
 
@@ -545,4 +520,6 @@
             @endif
         </div>
     </div>
+
+
 @endsection

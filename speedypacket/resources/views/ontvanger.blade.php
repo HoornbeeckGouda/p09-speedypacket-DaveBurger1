@@ -91,29 +91,7 @@
         font-size: 18px;
         font-weight: 600;
     }
-    .mini-chart {
-        width: 100%;
-        height: 60px;
-        margin-top: 16px;
-        background: linear-gradient(90deg, rgba(5,150,105,0.1), rgba(4,120,87,0.1));
-        border-radius: 8px;
-        position: relative;
-        overflow: hidden;
-    }
-    .mini-chart::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        background: linear-gradient(90deg, #059669, #047857);
-        border-radius: 8px;
-        animation: chart-fill 2s ease-out;
-    }
-    @keyframes chart-fill {
-        0% { width: 0%; }
-        100% { width: 75%; }
-    }
+
     .receiver-section {
         background: #fff;
         border-radius: 20px;
@@ -307,19 +285,16 @@
             <i class="fas fa-truck"></i>
             <h3>{{ $packagesInTransit->count() }}</h3>
             <p>Pakketten Onderweg</p>
-            <div class="mini-chart"></div>
         </div>
         <div class="receiver-stats-card billed">
             <i class="fas fa-file-invoice-dollar"></i>
             <h3>{{ $billedPackages->count() }}</h3>
             <p>Gefactureerde Pakketten</p>
-            <div class="mini-chart"></div>
         </div>
         <div class="receiver-stats-card delivered">
             <i class="fas fa-check-circle"></i>
             <h3>{{ $deliveredPackages->count() }}</h3>
             <p>Ontvangen Pakketten</p>
-            <div class="mini-chart"></div>
         </div>
     </div>
 
