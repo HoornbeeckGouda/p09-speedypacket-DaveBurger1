@@ -91,29 +91,7 @@
         font-size: 18px;
         font-weight: 600;
     }
-    .mini-chart {
-        width: 100%;
-        height: 60px;
-        margin-top: 16px;
-        background: linear-gradient(90deg, rgba(124,58,237,0.1), rgba(109,40,217,0.1));
-        border-radius: 8px;
-        position: relative;
-        overflow: hidden;
-    }
-    .mini-chart::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        background: linear-gradient(90deg, #7c3aed, #6d28d9);
-        border-radius: 8px;
-        animation: chart-fill 2s ease-out;
-    }
-    @keyframes chart-fill {
-        0% { width: 0%; }
-        100% { width: 75%; }
-    }
+
     .billing-section {
         background: #fff;
         border-radius: 20px;
@@ -304,13 +282,11 @@
             <i class="fas fa-check-circle"></i>
             <h3>{{ $deliveredPackages->count() }}</h3>
             <p>Bezorgd & Klaar voor Facturering</p>
-            <div class="mini-chart"></div>
         </div>
         <div class="billing-stats-card billed">
             <i class="fas fa-file-invoice-dollar"></i>
             <h3>{{ $billedPackages->count() }}</h3>
             <p>Gefactureerd</p>
-            <div class="mini-chart"></div>
         </div>
     </div>
 
@@ -430,15 +406,7 @@
             });
         });
 
-        document.querySelectorAll('.mini-chart').forEach(chart => {
-            chart.addEventListener('mouseenter', function() {
-                this.style.transform = 'scaleY(1.2)';
-                this.style.transition = 'transform 0.3s ease';
-            });
-            chart.addEventListener('mouseleave', function() {
-                this.style.transform = 'scaleY(1)';
-            });
-        });
+
 
         // Table row hover effects
         document.querySelectorAll('.billing-table tr').forEach(row => {

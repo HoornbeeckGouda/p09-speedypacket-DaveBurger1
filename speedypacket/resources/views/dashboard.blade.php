@@ -92,29 +92,7 @@
         font-size: 18px;
         font-weight: 600;
     }
-    .mini-chart {
-        width: 100%;
-        height: 60px;
-        margin-top: 16px;
-        background: linear-gradient(90deg, rgba(37,99,235,0.1), rgba(29,78,216,0.1));
-        border-radius: 8px;
-        position: relative;
-        overflow: hidden;
-    }
-    .mini-chart::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        background: linear-gradient(90deg, #2563eb, #1d4ed8);
-        border-radius: 8px;
-        animation: chart-fill 2s ease-out;
-    }
-    @keyframes chart-fill {
-        0% { width: 0%; }
-        100% { width: 75%; }
-    }
+
     .verzender-section {
         background: #fff;
         border-radius: 20px;
@@ -245,19 +223,16 @@
             <i class="fas fa-box"></i>
             <h3>{{ $totalPackages }}</h3>
             <p>Totaal Verzendingen</p>
-            <div class="mini-chart"></div>
         </div>
         <div class="verzender-stats-card pending">
             <i class="fas fa-clock"></i>
             <h3>{{ $pendingPackages }}</h3>
             <p>In Behandeling</p>
-            <div class="mini-chart"></div>
         </div>
         <div class="verzender-stats-card delivered">
             <i class="fas fa-check-circle"></i>
             <h3>{{ $deliveredPackages }}</h3>
             <p>Bezorgd</p>
-            <div class="mini-chart"></div>
         </div>
     </div>
 

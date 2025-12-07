@@ -255,7 +255,6 @@
                     <i class="fas fa-crown"></i>
                     <h3>{{ $directieCount }}</h3>
                     <p>Directie Accounts</p>
-                    <div class="mini-chart"></div>
                 </div>
                 <div class="management-stats-card users">
                     <i class="fas fa-user-friends"></i>
@@ -425,15 +424,7 @@
                 });
             });
 
-            document.querySelectorAll('.mini-chart').forEach(chart => {
-                chart.addEventListener('mouseenter', function() {
-                    this.style.transform = 'scaleY(1.2)';
-                    this.style.transition = 'transform 0.3s ease';
-                });
-                chart.addEventListener('mouseleave', function() {
-                    this.style.transform = 'scaleY(1)';
-                });
-            });
+
 
             // Table row hover effects
             document.querySelectorAll('.management-table tr').forEach(row => {
@@ -515,12 +506,7 @@
             `;
             document.head.appendChild(style);
 
-            // Trigger mini chart animations after page load
-            setTimeout(() => {
-                document.querySelectorAll('.mini-chart').forEach(chart => {
-                    chart.classList.add('animate');
-                });
-            }, 100);
+
         });
     </script>
 
