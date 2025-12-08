@@ -414,6 +414,7 @@
             @endif
         </div>
 
+        @if($billedPackages->count() == 0)
         <!-- Delivered Packages Section for Returns -->
         <div class="receiver-section">
             <h4 style="margin-bottom: 24px; font-size: 24px; font-weight: 700; color: #1e293b;">
@@ -463,6 +464,7 @@
                 </div>
             @endif
         </div>
+        @endif
 
         <!-- Returned Packages Section -->
         <div class="receiver-section">
